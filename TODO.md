@@ -7,7 +7,7 @@
 ### 1. Fix Swagger docs (JSDoc) configuration
 
 - Tasks
-  - [ ] Update `src/config/swagger.ts` to scan component files:
+  - [x] Update `src/config/swagger.ts` to scan component files:
     - Set `apis` to `['./src/components/**/*.routes.ts', './src/components/**/*.controller.ts']`.
   - [ ] Verify `/api-docs` renders Users and Health endpoints locally.
 - Acceptance criteria
@@ -19,13 +19,13 @@
   - Registration schema uses `name`; repositories/services expect `firstName`/`lastName`.
   - Controllers re-parse Zod schemas even though the validation middleware already parsed the request.
 - Tasks
-  - [ ] `src/components/users/users.validation.ts`: Replace `name` with `firstName` and `lastName` under `body`.
-  - [ ] `src/components/users/users.types.ts`: Ensure `UserRegistrationInput` (inferred) reflects `firstName`/`lastName`.
-  - [ ] `src/components/users/users.controller.ts`:
+  - [x] `src/components/users/users.validation.ts`: Replace `name` with `firstName` and `lastName` under `body`.
+  - [x] `src/components/users/users.types.ts`: Ensure `UserRegistrationInput` (inferred) reflects `firstName`/`lastName`.
+  - [x] `src/components/users/users.controller.ts`:
     - Remove redundant `UserRegistrationSchema.parse(req.body)` and `UserLoginSchema.parse(req.body)`.
     - Use `req.body` directly (already validated by middleware).
     - Remove any now-unused imports.
-  - [ ] `src/components/users/users.service.ts` (non‑Prisma branch):
+  - [x] `src/components/users/users.service.ts` (non‑Prisma branch):
     - Replace `parseFullName(user.name)` with direct `user.firstName`/`user.lastName`.
   - [ ] Smoke test both repository modes by toggling `USE_PRISMA`.
 - Acceptance criteria
@@ -39,7 +39,7 @@
 - Problem
   - `ComponentRegistry` tries to import `index.ts` only; fails after build where `.js` exists.
 - Tasks
-  - [ ] `src/common/core/ComponentRegistry.ts`:
+  - [x] `src/common/core/ComponentRegistry.ts`:
     - In `autoDiscover`, detect and import `index.js` (preferred in prod) or `index.ts` (dev).
     - Log which file is imported; skip directories missing both.
   - [ ] Verify component mounting in:
@@ -51,7 +51,7 @@
 ### 4. Improve logging user identification (optional)
 
 - Tasks
-  - [ ] `src/common/middleware/logging.middleware.ts`:
+  - [x] `src/common/middleware/logging.middleware.ts`:
     - Prefer `req.user?.id` when available for `userId`.
     - Optionally, decode JWT using `jsonwebtoken.decode` to populate `userId` when `req.user` is absent (behind an env flag).
 - Acceptance criteria
@@ -60,7 +60,7 @@
 ### 5. Quality gates and verification
 
 - Tasks
-  - [ ] `npm run type-check`
+  - [x] `npm run type-check`
   - [ ] `npm run lint`
   - [ ] `npm test`
   - [ ] `npm run build` and start the dist server to verify route discovery and docs.
@@ -70,7 +70,7 @@
 ### 6. Delivery and rollback
 
 - Workflow
-  - [ ] Create branch: `chore/next-steps-implementation`
+  - [x] Create branch: `chore/next-steps-implementation`
   - [ ] Small, focused commits per task; link to this TODO.
   - [ ] If regressions appear, revert the specific commit; changes are isolated.
 

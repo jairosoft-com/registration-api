@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import { createChildLogger } from '@common/utils/logger';
 import jwt from 'jsonwebtoken';
-import config from '@/config';
 
 interface RequestLog {
   method: string;
@@ -55,8 +54,9 @@ const generateRequestId = (): string => {
 const extractUserId = (req: Request): string | undefined => {
   try {
     // Prefer authenticated user set by upstream auth middleware
-    if (req.user?.id) {
-      return req.user.id;
+    const requestAny = req as any;
+    if (requestAny.user && typeof requestAny.user.id === 'string') {
+      return requestAny.user.id as string;
     }
 
     const authHeader = req.headers.authorization;
@@ -72,7 +72,7 @@ const extractUserId = (req: Request): string | undefined => {
       }
     }
     return undefined;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

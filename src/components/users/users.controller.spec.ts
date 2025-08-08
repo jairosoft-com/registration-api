@@ -120,8 +120,9 @@ describe('User Controller', () => {
     it('should successfully login a user', async () => {
       const mockUser = {
         id: 'user-123',
-        name: 'Test User',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
       };
       const mockToken = 'mock-jwt-token';
 
