@@ -127,10 +127,7 @@ app.use('/api/v1/gateway', (req: Request, res: Response, next: NextFunction) => 
   apiGatewayService.routeRequest(req, res, next);
 });
 
-// Error Handling
-app.use((_req, _res, next) => next(new ApiError(404, 'Not Found')));
-app.use(errorLogger);
-app.use(errorMiddleware);
+// Error handling will be registered after routes are mounted in startServer()
 
 /**
  * Start the server with database connections
@@ -159,6 +156,11 @@ const startServer = async () => {
     // Mount component routes
     componentRegistry.mountRoutes(app);
     logger.info(`Mounted ${componentRegistry.getStats().total} components`);
+
+    // Error Handling (after routes are mounted)
+    app.use((_req, _res, next) => next(new ApiError(404, 'Not Found')));
+    app.use(errorLogger);
+    app.use(errorMiddleware);
 
     // Phase 5: Initialize services
     logger.info('Initializing Phase 5 services...');

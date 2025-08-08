@@ -150,15 +150,20 @@ export class ComponentRegistry implements IComponentRegistry {
         }
 
         try {
-          // Try to import the component
-          const module = await import(importPath);
+          // Try to import the component (handle both ESM and CJS interop)
+          const mod: any = await import(importPath);
 
-          if (module.default && this.isValidComponent(module.default)) {
-            const component = module.default as IComponent;
-            this.register(component);
-          } else if (module.component && this.isValidComponent(module.component)) {
-            const component = module.component as IComponent;
-            this.register(component);
+          const candidates: any[] = [
+            mod,
+            mod?.default,
+            mod?.component,
+            mod?.default?.default,
+          ];
+
+          const found = candidates.find((c) => this.isValidComponent(c));
+
+          if (found) {
+            this.register(found as IComponent);
           } else {
             this.logger.warn(
               `Invalid component structure in ${dir}: Missing required properties (name, version, router, basePath)`
