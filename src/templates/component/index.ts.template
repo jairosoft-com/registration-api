@@ -1,0 +1,70 @@
+import { BaseComponent } from '@common/base/BaseComponent';
+import { IComponentMetadata } from '@common/types/component';
+import { {{ComponentName}}Controller } from './{{componentName}}.controller';
+import { {{ComponentName}}Service } from './{{componentName}}.service';
+import { {{componentName}}Routes } from './{{componentName}}.routes';
+
+/**
+ * {{ComponentName}} Component
+ * {{description}}
+ */
+class {{ComponentName}}Component extends BaseComponent {
+  private controller: {{ComponentName}}Controller;
+  private service: {{ComponentName}}Service;
+
+  constructor() {
+    const metadata: IComponentMetadata = {
+      name: '{{componentName}}',
+      version: '1',
+      description: '{{description}}',
+      enabled: true,
+      dependencies: [],
+      tags: ['{{componentName}}']
+    };
+
+    super(metadata);
+
+    // Initialize service and controller
+    this.service = new {{ComponentName}}Service();
+    this.controller = new {{ComponentName}}Controller(this.service);
+  }
+
+  /**
+   * Initialize component routes
+   */
+  protected initializeRoutes(): void {
+    // Apply routes to the component router
+    {{componentName}}Routes(this.router, this.controller);
+  }
+
+  /**
+   * Initialize component
+   */
+  public async initialize(): Promise<void> {
+    await super.initialize();
+    
+    // Perform any async initialization
+    if (this.service.initialize) {
+      await this.service.initialize();
+    }
+    
+    if (this.controller.initialize) {
+      await this.controller.initialize();
+    }
+  }
+
+  /**
+   * Shutdown component
+   */
+  public async shutdown(): Promise<void> {
+    await super.shutdown();
+    
+    // Perform any cleanup
+    if (this.service.cleanup) {
+      await this.service.cleanup();
+    }
+  }
+}
+
+// Export component instance
+export default new {{ComponentName}}Component();

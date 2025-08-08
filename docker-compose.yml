@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/mydatabase
+      USE_PRISMA: "false"  # Set to "true" to use Prisma instead of Mongoose
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    command: sh -c "npx prisma migrate dev && npm run dev"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    network_mode: host
+    depends_on:
+      - app
+    volumes:
+      - ./e2e:/app/e2e
+      - ./playwright-report:/app/playwright-report
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:

@@ -1,0 +1,618 @@
+openapi: 3.1.1
+info:
+  title: Class Registration API
+  description: |
+    API for class registration system that allows students to register for classes online.
+    This API handles form submission, validation, duplicate prevention, and email notifications.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@registration-system.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.registration-system.com/v1
+    description: Production server
+  - url: https://staging-api.registration-system.com/v1
+    description: Staging server
+  - url: http://127.0.0.1:3001/v1
+    description: Local development server
+
+tags:
+  - name: Registration
+    description: Registration form operations
+  - name: Validation
+    description: Form validation operations
+  - name: Schedule
+    description: Available schedule/time slot operations
+
+paths:
+  /registration:
+    post:
+      tags:
+        - Registration
+      summary: Submit class registration
+      description: |
+        Submit a new class registration. The API will validate the data,
+        check for duplicates, store the registration, and send confirmation emails.
+      operationId: submitRegistration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+            examples:
+              valid_registration:
+                summary: Valid registration example
+                value:
+                  firstName: "John"
+                  lastName: "Doe"
+                  email: "john.doe@example.com"
+                  confirmEmail: "john.doe@example.com"
+                  schedule: "2024-03-15T10:00:00Z"
+              invalid_email:
+                summary: Invalid email example
+                value:
+                  firstName: "John"
+                  lastName: "Doe"
+                  email: "invalid-email@example.com"
+                  confirmEmail: "invalid-email@example.com"
+                  schedule: "2024-03-15T10:00:00Z"
+      responses:
+        '201':
+          description: Registration created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+              examples:
+                success_response:
+                  summary: Successful registration response
+                  value:
+                    success: true
+                    message: "Registration submitted successfully"
+                    registrationId: "reg_123456789"
+                    emailSent: true
+                    adminNotificationSent: true
+                    nextSteps: "Check your email for confirmation details"
+        '400':
+          description: Bad request - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                validation_errors:
+                  summary: Validation errors example
+                  value:
+                    success: false
+                    message: "Validation failed"
+                    errors:
+                      - field: "email"
+                        message: "Invalid email format"
+                      - field: "confirmEmail"
+                        message: "Email addresses do not match"
+                      - field: "firstName"
+                        message: "First name is required"
+        '409':
+          description: Conflict - duplicate registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateErrorResponse'
+              examples:
+                duplicate_error:
+                  summary: Duplicate registration error
+                  value:
+                    success: false
+                    message: "Registration already exists for this email"
+                    errorCode: "DUPLICATE_REGISTRATION"
+                    existingRegistrationId: "reg_123456789"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: Server error example
+                  value:
+                    success: false
+                    message: "Internal server error"
+                    errorCode: "INTERNAL_ERROR"
+                    requestId: "req_987654321"
+
+  /registration/validate:
+    post:
+      tags:
+        - Validation
+      summary: Validate registration data
+      description: |
+        Validate registration data without submitting. This endpoint can be used
+        for real-time validation as users fill out the form.
+      operationId: validateRegistration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResponse'
+              examples:
+                valid_data:
+                  summary: Valid data response
+                  value:
+                    valid: true
+                    message: "All fields are valid"
+                invalid_data:
+                  summary: Invalid data response
+                  value:
+                    valid: false
+                    message: "Validation failed"
+                    errors:
+                      - field: "email"
+                        message: "Invalid email format"
+                      - field: "confirmEmail"
+                        message: "Email addresses do not match"
+        '400':
+          description: Bad request - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /schedule/available:
+    get:
+      tags:
+        - Schedule
+      summary: Get available time slots
+      description: |
+        Retrieve available time slots for class registration.
+        This endpoint provides the schedule options for the dropdown.
+      operationId: getAvailableSchedules
+      parameters:
+        - name: date
+          in: query
+          description: Filter schedules by date (YYYY-MM-DD)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          description: Maximum number of schedules to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Available schedules retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+              examples:
+                schedules_response:
+                  summary: Available schedules
+                  value:
+                    success: true
+                    schedules:
+                      - id: "sched_001"
+                        date: "2024-03-15"
+                        time: "09:00:00"
+                        available: true
+                        maxCapacity: 20
+                        currentEnrollment: 15
+                      - id: "sched_002"
+                        date: "2024-03-15"
+                        time: "14:00:00"
+                        available: true
+                        maxCapacity: 20
+                        currentEnrollment: 8
+                      - id: "sched_003"
+                        date: "2024-03-16"
+                        time: "10:00:00"
+                        available: true
+                        maxCapacity: 25
+                        currentEnrollment: 12
+                      - id: "sched_004"
+                        date: "2024-03-16"
+                        time: "15:00:00"
+                        available: true
+                        maxCapacity: 25
+                        currentEnrollment: 18
+                      - id: "sched_005"
+                        date: "2024-03-17"
+                        time: "08:00:00"
+                        available: true
+                        maxCapacity: 30
+                        currentEnrollment: 22
+                      - id: "sched_006"
+                        date: "2024-03-17"
+                        time: "13:00:00"
+                        available: true
+                        maxCapacity: 30
+                        currentEnrollment: 25
+                      - id: "sched_007"
+                        date: "2024-03-18"
+                        time: "11:00:00"
+                        available: true
+                        maxCapacity: 20
+                        currentEnrollment: 8
+                      - id: "sched_008"
+                        date: "2024-03-18"
+                        time: "16:00:00"
+                        available: true
+                        maxCapacity: 20
+                        currentEnrollment: 14
+                      - id: "sched_009"
+                        date: "2024-03-19"
+                        time: "09:30:00"
+                        available: true
+                        maxCapacity: 15
+                        currentEnrollment: 11
+                      - id: "sched_010"
+                        date: "2024-03-19"
+                        time: "14:30:00"
+                        available: true
+                        maxCapacity: 15
+                        currentEnrollment: 7
+        '400':
+          description: Bad request - invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /registration/{registrationId}:
+    get:
+      tags:
+        - Registration
+      summary: Get registration details
+      description: Retrieve details of a specific registration by ID
+      operationId: getRegistration
+      parameters:
+        - name: registrationId
+          in: path
+          required: true
+          description: Unique identifier for the registration
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Registration details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationDetails'
+              examples:
+                registration_details:
+                  summary: Registration details example
+                  value:
+                    id: "reg_123456789"
+                    firstName: "John"
+                    lastName: "Doe"
+                    email: "john.doe@example.com"
+                    schedule: "2024-03-15T10:00:00Z"
+                    createdAt: "2024-03-10T14:30:00Z"
+                    status: "confirmed"
+                    emailSent: true
+        '404':
+          description: Registration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    RegistrationRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - confirmEmail
+        - schedule
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[a-zA-Z\s]+$'
+          description: Student's first name (letters and spaces only)
+          example: "John"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[a-zA-Z\s]+$'
+          description: Student's last name (letters and spaces only)
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Student's email address
+          example: "john.doe@example.com"
+        confirmEmail:
+          type: string
+          format: email
+          maxLength: 255
+          description: Confirmation of email address (must match email field)
+          example: "john.doe@example.com"
+        schedule:
+          type: string
+          format: date-time
+          description: Selected schedule/time slot for the class
+          example: "2024-03-15T10:00:00Z"
+
+    RegistrationResponse:
+      type: object
+      required:
+        - success
+        - message
+        - registrationId
+      properties:
+        success:
+          type: boolean
+          description: Whether the registration was successful
+          example: true
+        message:
+          type: string
+          description: Success message
+          example: "Registration submitted successfully"
+        registrationId:
+          type: string
+          description: Unique identifier for the registration
+          example: "reg_123456789"
+        emailSent:
+          type: boolean
+          description: Whether confirmation email was sent
+          example: true
+        adminNotificationSent:
+          type: boolean
+          description: Whether admin notification was sent
+          example: true
+        nextSteps:
+          type: string
+          description: Instructions for next steps
+          example: "Check your email for confirmation details"
+
+    ValidationErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+        - errors
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+          example: false
+        message:
+          type: string
+          description: General error message
+          example: "Validation failed"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: List of validation errors
+
+    ValidationError:
+      type: object
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+          description: Field name that has validation error
+          example: "email"
+        message:
+          type: string
+          description: Error message for the field
+          example: "Invalid email format"
+        code:
+          type: string
+          description: Error code for programmatic handling
+          example: "INVALID_EMAIL_FORMAT"
+
+    DuplicateErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+        - errorCode
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+          example: false
+        message:
+          type: string
+          description: Error message
+          example: "Registration already exists for this email"
+        errorCode:
+          type: string
+          description: Error code for programmatic handling
+          example: "DUPLICATE_REGISTRATION"
+        existingRegistrationId:
+          type: string
+          description: ID of the existing registration
+          example: "reg_123456789"
+
+    ValidationResponse:
+      type: object
+      required:
+        - valid
+        - message
+      properties:
+        valid:
+          type: boolean
+          description: Whether the data is valid
+          example: true
+        message:
+          type: string
+          description: Validation message
+          example: "All fields are valid"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: List of validation errors (only present if valid is false)
+
+    ScheduleResponse:
+      type: object
+      required:
+        - success
+        - schedules
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+          example: true
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
+          description: List of available schedules
+
+    Schedule:
+      type: object
+      required:
+        - id
+        - date
+        - time
+        - available
+        - maxCapacity
+        - currentEnrollment
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the schedule
+          example: "sched_001"
+        date:
+          type: string
+          format: date
+          description: Date of the class
+          example: "2024-03-15"
+        time:
+          type: string
+          format: time
+          description: Time of the class
+          example: "09:00:00"
+        available:
+          type: boolean
+          description: Whether the schedule is available for registration
+          example: true
+        maxCapacity:
+          type: integer
+          minimum: 1
+          description: Maximum number of students for this schedule
+          example: 20
+        currentEnrollment:
+          type: integer
+          minimum: 0
+          description: Current number of enrolled students
+          example: 15
+
+    RegistrationDetails:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - schedule
+        - createdAt
+        - status
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the registration
+          example: "reg_123456789"
+        firstName:
+          type: string
+          description: Student's first name
+          example: "John"
+        lastName:
+          type: string
+          description: Student's last name
+          example: "Doe"
+        email:
+          type: string
+          description: Student's email address
+          example: "john.doe@example.com"
+        schedule:
+          type: string
+          format: date-time
+          description: Selected schedule for the class
+          example: "2024-03-15T10:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: When the registration was created
+          example: "2024-03-10T14:30:00Z"
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+          description: Current status of the registration
+          example: "confirmed"
+        emailSent:
+          type: boolean
+          description: Whether confirmation email was sent
+          example: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+          example: false
+        message:
+          type: string
+          description: Error message
+          example: "Internal server error"
+        errorCode:
+          type: string
+          description: Error code for programmatic handling
+          example: "INTERNAL_ERROR"
+        requestId:
+          type: string
+          description: Unique request identifier for debugging
+          example: "req_987654321"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+
+security:
+  - ApiKeyAuth: []

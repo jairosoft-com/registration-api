@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# Run lint-staged for formatting and linting
+npx lint-staged
+
+# Run type checking
+echo "Running type check..."
+npm run type-check
+
+# Run unit tests for changed files
+echo "Running tests for changed files..."
+npm test -- --findRelatedTests --passWithNoTests
+
+# Check for console.log statements in staged files
+echo "Checking for console.log statements..."
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' | xargs -r grep -l 'console.log' && {
+  echo "Error: Found console.log statements in staged files"
+  echo "Please remove console.log statements before committing"
+  exit 1
+} || true
+
+echo "Pre-commit checks passed ✅"

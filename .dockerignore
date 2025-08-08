@@ -1,0 +1,92 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Test files and coverage
+coverage/
+*.spec.ts
+*.test.ts
+__tests__/
+e2e/
+playwright-report/
+test-results/
+jest.config.*
+playwright.config.*
+.nyc_output
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.*
+*.log
+logs/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+api-docs/
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Docker files (not needed in build context)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Configuration files
+.editorconfig
+.prettierrc*
+.eslintrc*
+eslint.config.*
+.npmrc
+.nvmrc
+.tool-versions
+renovate.json
+LICENSE
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+.directory
+.Trash-*

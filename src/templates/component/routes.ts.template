@@ -1,0 +1,65 @@
+import { Router } from 'express';
+import { {{ComponentName}}Controller } from './{{componentName}}.controller';
+import { authMiddleware } from '@common/middleware/auth.middleware';
+import { validateRequest } from '@common/middleware/validation.middleware';
+import { create{{ComponentName}}Schema, update{{ComponentName}}Schema } from './{{componentName}}.validation';
+
+/**
+ * {{ComponentName}} Routes
+ * Defines all routes for {{componentName}} operations
+ * 
+ * VALIDATION SETUP:
+ * 1. Validation schemas are imported above
+ * 2. To enable validation for a route, uncomment the validateRequest middleware
+ * 3. Customize the validation schemas in {{componentName}}.validation.ts
+ * 4. The validateRequest middleware will automatically handle validation errors
+ */
+export const {{componentName}}Routes = (
+  router: Router,
+  controller: {{ComponentName}}Controller
+): void => {
+  /**
+   * @route   GET /api/v1/{{componentName}}s
+   * @desc    Get all {{componentName}}s
+   * @access  Public
+   */
+  router.get('/', controller.getAll);
+
+  /**
+   * @route   GET /api/v1/{{componentName}}s/:id
+   * @desc    Get {{componentName}} by ID
+   * @access  Public
+   */
+  router.get('/:id', controller.getById);
+
+  /**
+   * @route   POST /api/v1/{{componentName}}s
+   * @desc    Create new {{componentName}}
+   * @access  Private
+   */
+  router.post(
+    '/',
+    authMiddleware,
+    // validateRequest(create{{ComponentName}}Schema),
+    controller.create
+  );
+
+  /**
+   * @route   PUT /api/v1/{{componentName}}s/:id
+   * @desc    Update {{componentName}}
+   * @access  Private
+   */
+  router.put(
+    '/:id',
+    authMiddleware,
+    // validateRequest(update{{ComponentName}}Schema),
+    controller.update
+  );
+
+  /**
+   * @route   DELETE /api/v1/{{componentName}}s/:id
+   * @desc    Delete {{componentName}}
+   * @access  Private
+   */
+  router.delete('/:id', authMiddleware, controller.delete);
+};

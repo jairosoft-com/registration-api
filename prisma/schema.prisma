@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with authentication and profile fields
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  password         String
+  firstName        String
+  lastName         String
+  avatar           String?
+  emailVerified    Boolean   @default(false)
+  active           Boolean   @default(true)
+  lastLogin        DateTime?
+  loginAttempts    Int       @default(0)
+  lockUntil        DateTime?
+  
+  // OAuth fields
+  oauthProvider    String?
+  oauthProviderId  String?
+  
+  // Two-factor authentication
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String?
+  
+  // Relations
+  backupCodes      BackupCode[]
+  sessions         Session[]
+  roles            UserRole[]
+  
+  // Timestamps
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  // Indexes for performance
+  @@index([email])
+  @@index([oauthProvider, oauthProviderId])
+  @@map("users")
+}
+
+// Backup codes for two-factor authentication
+model BackupCode {
+  id        String    @id @default(cuid())
+  code      String
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  
+  @@unique([userId, code])
+  @@index([userId])
+  @@map("backup_codes")
+}
+
+// Session model for future session management
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+// Audit log for tracking user actions
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// Permission model for future RBAC implementation
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  resource    String
+  action      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  roles       RolePermission[]
+  
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+// Role model for future RBAC implementation
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  permissions RolePermission[]
+  users       UserRole[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@map("roles")
+}
+
+// Many-to-many relation between roles and permissions
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// Many-to-many relation between users and roles
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("user_roles")
+}
