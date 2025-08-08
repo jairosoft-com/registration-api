@@ -151,7 +151,14 @@ export class ComponentRegistry implements IComponentRegistry {
 
         try {
           // Try to import the component (handle both ESM and CJS interop)
-          const mod: any = await import(importPath);
+          let mod: any;
+          if (importPath.endsWith('.ts')) {
+            // In dev, ts-node registers loaders; prefer file URL import for reliability
+            const { pathToFileURL } = await import('url');
+            mod = await import(pathToFileURL(importPath).href);
+          } else {
+            mod = await import(importPath);
+          }
 
           const candidates: any[] = [
             mod,
