@@ -276,7 +276,8 @@ const options = {
       },
     ],
   },
-  apis: ['./src/api/**/*.routes.ts', './src/api/**/*.controller.ts'],
+  // Scan component route and controller files for Swagger JSDoc
+  apis: ['./src/components/**/*.routes.ts', './src/components/**/*.controller.ts'],
 };
 
 const specs = swaggerJsdoc(options);

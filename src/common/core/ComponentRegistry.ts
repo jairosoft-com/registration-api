@@ -126,19 +126,32 @@ export class ComponentRegistry implements IComponentRegistry {
 
       for (const dir of directories) {
         const componentPath = join(componentsPath, dir);
-        const indexPath = join(componentPath, 'index.ts');
+        const tsIndexPath = join(componentPath, 'index.ts');
+        const jsIndexPath = join(componentPath, 'index.js');
 
+        let importPath: string | null = null;
+        // Prefer JS in prod build (dist), fall back to TS in dev
         try {
-          // Check if index.ts exists
-          statSync(indexPath);
-        } catch (error) {
-          this.logger.debug(`Skipping ${dir}: No index.ts file found in component directory`);
+          statSync(jsIndexPath);
+          importPath = jsIndexPath;
+        } catch {
+          try {
+            statSync(tsIndexPath);
+            importPath = tsIndexPath;
+          } catch {
+            this.logger.debug(
+              `Skipping ${dir}: No index.js or index.ts file found in component directory`
+            );
+          }
+        }
+
+        if (!importPath) {
           continue;
         }
 
         try {
           // Try to import the component
-          const module = await import(indexPath);
+          const module = await import(importPath);
 
           if (module.default && this.isValidComponent(module.default)) {
             const component = module.default as IComponent;

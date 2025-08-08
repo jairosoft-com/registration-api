@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import { createChildLogger } from '@common/utils/logger';
+import jwt from 'jsonwebtoken';
+import config from '@/config';
 
 interface RequestLog {
   method: string;
@@ -52,12 +54,22 @@ const generateRequestId = (): string => {
  */
 const extractUserId = (req: Request): string | undefined => {
   try {
-    // This is a simplified version - in a real app, you'd decode the JWT
+    // Prefer authenticated user set by upstream auth middleware
+    if (req.user?.id) {
+      return req.user.id;
+    }
+
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      // For now, we'll just return a placeholder
-      // In a real implementation, you'd decode the JWT and extract the user ID
-      return 'user_id_from_token';
+      // Optional JWT decode for userId when feature flag is enabled
+      if (process.env.DECODE_JWT_FOR_LOGS === 'true') {
+        const token = authHeader.slice('Bearer '.length);
+        const decoded: any = jwt.decode(token);
+        const userId = decoded?.id || decoded?.userId || decoded?.sub;
+        if (typeof userId === 'string') {
+          return userId;
+        }
+      }
     }
     return undefined;
   } catch (error) {

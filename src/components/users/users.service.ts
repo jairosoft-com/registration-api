@@ -4,7 +4,7 @@ import { UserRegistrationInput, UserPublicData } from './users.types';
 import { ApiError } from '@common/utils/ApiError';
 import { BaseService } from '@common/base/BaseService';
 import config from '@/config';
-import { parseFullName } from '@common/utils/name.utils';
+// import { parseFullName } from '@common/utils/name.utils';
 
 // Import both repositories for migration phase
 import { userRepository as prismaUserRepository } from '@/repositories/user.repository';
@@ -109,9 +109,9 @@ export class UserService extends BaseService {
       firstName = user.firstName;
       lastName = user.lastName;
     } else {
-      const parsed = parseFullName(user.name);
-      firstName = parsed.firstName;
-      lastName = parsed.lastName;
+      // In the MongoDB model, firstName/lastName are stored separately
+      firstName = user.firstName;
+      lastName = user.lastName;
     }
 
     const userPublicData: UserPublicData = {

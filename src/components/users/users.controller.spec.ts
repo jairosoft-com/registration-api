@@ -40,7 +40,8 @@ describe('User Controller', () => {
 
   describe('registerUser', () => {
     const validRegistrationData = {
-      name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       email: 'test@example.com',
       password: 'password123',
     };
@@ -48,8 +49,9 @@ describe('User Controller', () => {
     it('should successfully register a user', async () => {
       const mockUser = {
         id: 'user-123',
-        name: 'Test User',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
       };
       const mockToken = 'mock-jwt-token';
 

@@ -29,15 +29,17 @@ const mockUserRepository = userRepository as jest.Mocked<typeof userRepository>;
 describe('User Service', () => {
   const mockUser = {
     id: 'user-123',
-    name: 'Test User',
+    firstName: 'Test',
+    lastName: 'User',
     email: 'test@example.com',
     password: 'hashed-password',
   };
 
   const mockUserPublicData = {
     id: mockUser.id,
-    name: mockUser.name,
     email: mockUser.email,
+    firstName: mockUser.firstName,
+    lastName: mockUser.lastName,
   };
 
   beforeEach(() => {
@@ -46,7 +48,8 @@ describe('User Service', () => {
 
   describe('registerNewUser', () => {
     const registrationData = {
-      name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       email: 'test@example.com',
       password: 'password123',
     };

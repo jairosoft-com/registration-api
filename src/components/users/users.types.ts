@@ -8,8 +8,8 @@ export type UserLoginInput = z.infer<typeof UserLoginSchema>['body'];
 export interface UserPublicData {
   id: string;
   email: string;
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   avatar?: string | null;
   emailVerified?: boolean;
   // Legacy field for backward compatibility
