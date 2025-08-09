@@ -81,7 +81,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 ### Recommended fixes (actionable)
 
 - Swagger:
-  - Update `src/config/swagger.ts` `apis` to:
+  - Update `src/config/swagger.ts` `apis` globs to point to components (current code points to `src/api/**`):
     - `./src/components/**/*.routes.ts`
     - `./src/components/**/*.controller.ts`
 - Validation and controllers:
@@ -94,7 +94,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - Component discovery:
   - In `ComponentRegistry.autoDiscover`, prefer `index.js` in prod (dist) and fall back to `index.ts` in dev.
 - Port alignment:
-  - Pick one port (4010 recommended) and align README, `.env.example`, Docker Compose, and Playwright baseURL.
+  - Development and tests use port 4010. Docker Compose maps 3001→3001 by default; adjust `docker-compose.yml` or set `PORT=4010` to align.
 - Logging:
   - Prefer `req.user?.id` when available. Optionally, safely `jsonwebtoken.decode` under a flag to enrich logs.
 - Misc:
@@ -320,12 +320,25 @@ docker-compose run playwright-tests npm run test:e2e
 
 - `POST /api/v1/users/register` - Register a new user
 
+  Request body supports either flat or nested shape (tests use nested):
+
   ```json
   {
-    "firstName": "John",
-    "lastName": "Doe",
+    "name": "John Doe",
     "email": "john@example.com",
     "password": "securepassword123"
+  }
+  ```
+
+  or
+
+  ```json
+  {
+    "body": {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "securepassword123"
+    }
   }
   ```
 
@@ -365,7 +378,7 @@ This template follows a component-based architecture with auto-discovery:
 - **Components** - Self-contained feature modules with all related files
 - **Controller Layer** - HTTP request/response handling and routing
 - **Service Layer** - Business logic, orchestration, and data processing
-- **Repository Layer** - Data access abstraction with Prisma ORM
+- **Repository Layer** - Data access abstraction (Prisma and Mongoose supported)
 - **Validation Layer** - Input validation with Zod schemas
 - **Common Layer** - Shared utilities, constants, and types
 
@@ -694,7 +707,7 @@ spec:
 
 ### Logging
 
-- **Structured Logging** - Winston with JSON formatting
+- **Structured Logging** - Pino with JSON formatting (pino-pretty in development)
 - **Request Logging** - All HTTP requests and responses
 - **Performance Monitoring** - Response time tracking
 - **Error Logging** - Comprehensive error tracking
