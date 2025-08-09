@@ -183,8 +183,8 @@ class ApiGatewayService {
         responseTime: response.responseTime,
         statusCode: response.status,
       });
-    } catch (error) {
-      logger.error({ error }, 'API Gateway error');
+    } catch (_error) {
+      logger.error({ err: _error }, 'API Gateway error');
 
       res.status(500).json({
         status: 'error',
@@ -235,7 +235,7 @@ class ApiGatewayService {
       (req as any).user = decoded;
 
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -274,15 +274,15 @@ class ApiGatewayService {
         service: routeConfig.service,
         responseTime,
       };
-    } catch (error: any) {
+    } catch (_error: any) {
       const responseTime = Date.now() - startTime;
 
-      if (error.response) {
+      if (_error.response) {
         // Service responded with error
         return {
-          data: error.response.data,
-          status: error.response.status,
-          headers: error.response.headers as Record<string, string>,
+          data: _error.response.data,
+          status: _error.response.status,
+          headers: _error.response.headers as Record<string, string>,
           service: routeConfig.service,
           responseTime,
         };

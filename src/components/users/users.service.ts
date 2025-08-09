@@ -102,26 +102,26 @@ export class UserService extends BaseService {
     }
 
     // Prepare user public data
-    let firstName: string;
-    let lastName: string;
-
+    let userPublicData: UserPublicData;
     if (USE_PRISMA) {
-      firstName = user.firstName;
-      lastName = user.lastName;
+      userPublicData = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
+      };
     } else {
+      // Maintain backward-compatible shape for Mongoose path: include name
       const parsed = parseFullName(user.name);
-      firstName = parsed.firstName;
-      lastName = parsed.lastName;
+      const fullName = user.name || `${parsed.firstName} ${parsed.lastName}`.trim();
+      userPublicData = {
+        id: user.id,
+        email: user.email,
+        name: fullName,
+      } as UserPublicData;
     }
-
-    const userPublicData: UserPublicData = {
-      id: user.id,
-      email: user.email,
-      firstName,
-      lastName,
-      avatar: USE_PRISMA ? user.avatar : undefined,
-      emailVerified: USE_PRISMA ? user.emailVerified : false,
-    };
 
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, config.jwt.secret, {

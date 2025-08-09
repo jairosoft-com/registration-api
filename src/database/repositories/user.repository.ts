@@ -47,7 +47,7 @@ export class UserRepository {
         avatar: user.avatar,
         emailVerified: user.emailVerified,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while finding user');
     }
   }
@@ -73,7 +73,7 @@ export class UserRepository {
         avatar: user.avatar,
         emailVerified: user.emailVerified,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while finding user by email');
     }
   }
@@ -87,7 +87,7 @@ export class UserRepository {
     try {
       const user = await UserModel.findOne({ email }).select('+password');
       return user;
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while finding user with password');
     }
   }
@@ -115,8 +115,8 @@ export class UserRepository {
         avatar: newUser.avatar,
         emailVerified: newUser.emailVerified,
       };
-    } catch (error: any) {
-      if (error.code === 11000) {
+    } catch (_error: any) {
+      if ((_error as any).code === 11000) {
         // MongoDB duplicate key error
         throw new ApiError(409, 'Email already in use');
       }
@@ -153,8 +153,8 @@ export class UserRepository {
         avatar: updatedUser.avatar,
         emailVerified: updatedUser.emailVerified,
       };
-    } catch (error: any) {
-      if (error.code === 11000) {
+    } catch (_error: any) {
+      if ((_error as any).code === 11000) {
         throw new ApiError(409, 'Email already in use');
       }
       throw new ApiError(500, 'Database error while updating user');
@@ -170,7 +170,7 @@ export class UserRepository {
     try {
       const result = await UserModel.findByIdAndDelete(id);
       return result !== null;
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while deleting user');
     }
   }
@@ -205,7 +205,7 @@ export class UserRepository {
         users: userPublicData,
         total,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while fetching users');
     }
   }
@@ -219,7 +219,7 @@ export class UserRepository {
     try {
       const count = await UserModel.countDocuments({ email });
       return count > 0;
-    } catch (error) {
+    } catch (_error) {
       throw new ApiError(500, 'Database error while checking user existence');
     }
   }

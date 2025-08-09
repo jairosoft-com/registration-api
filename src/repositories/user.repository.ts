@@ -35,9 +35,9 @@ export class UserRepository extends BaseRepository<
         where: { email: email.toLowerCase() },
       });
       return user;
-    } catch (error) {
-      this.logger.error({ err: error, email }, 'Error finding user by email');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, email }, 'Error finding user by email');
+      throw _error;
     }
   }
 
@@ -53,12 +53,12 @@ export class UserRepository extends BaseRepository<
         },
       });
       return user;
-    } catch (error) {
+    } catch (_error) {
       this.logger.error(
-        { err: error, provider, providerId },
+        { err: _error, provider, providerId },
         'Error finding user by OAuth provider'
       );
-      throw error;
+      throw _error;
     }
   }
 
@@ -88,12 +88,12 @@ export class UserRepository extends BaseRepository<
       });
 
       return user;
-    } catch (error) {
-      if ((error as any).code === 'P2002') {
+    } catch (_error) {
+      if ((_error as any).code === 'P2002') {
         throw ApiError.conflict('Email already exists');
       }
-      this.logger.error({ err: error }, 'Error creating user');
-      throw error;
+      this.logger.error({ err: _error }, 'Error creating user');
+      throw _error;
     }
   }
 
@@ -126,15 +126,15 @@ export class UserRepository extends BaseRepository<
       });
 
       return user;
-    } catch (error) {
-      if ((error as any).code === 'P2025') {
+    } catch (_error) {
+      if ((_error as any).code === 'P2025') {
         throw ApiError.notFound('User not found');
       }
-      if ((error as any).code === 'P2002') {
+      if ((_error as any).code === 'P2002') {
         throw ApiError.conflict('Email already exists');
       }
-      this.logger.error({ err: error, id }, 'Error updating user');
-      throw error;
+      this.logger.error({ err: _error, id }, 'Error updating user');
+      throw _error;
     }
   }
 
@@ -153,9 +153,9 @@ export class UserRepository extends BaseRepository<
       }
 
       return bcrypt.compare(password, user.password);
-    } catch (error) {
-      this.logger.error({ err: error, userId }, 'Error verifying password');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, userId }, 'Error verifying password');
+      throw _error;
     }
   }
 
@@ -180,9 +180,9 @@ export class UserRepository extends BaseRepository<
           lockUntil,
         },
       });
-    } catch (error) {
-      this.logger.error({ err: error, email }, 'Error incrementing login attempts');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, email }, 'Error incrementing login attempts');
+      throw _error;
     }
   }
 
@@ -199,9 +199,9 @@ export class UserRepository extends BaseRepository<
           lastLogin: new Date(),
         },
       });
-    } catch (error) {
-      this.logger.error({ err: error, userId }, 'Error resetting login attempts');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, userId }, 'Error resetting login attempts');
+      throw _error;
     }
   }
 
@@ -223,9 +223,9 @@ export class UserRepository extends BaseRepository<
       }
 
       return false;
-    } catch (error) {
-      this.logger.error({ err: error, email }, 'Error checking if user is locked');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, email }, 'Error checking if user is locked');
+      throw _error;
     }
   }
 
@@ -241,9 +241,9 @@ export class UserRepository extends BaseRepository<
           twoFactorSecret: secret,
         },
       });
-    } catch (error) {
-      this.logger.error({ err: error, userId }, 'Error enabling two-factor authentication');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, userId }, 'Error enabling two-factor authentication');
+      throw _error;
     }
   }
 
@@ -258,9 +258,9 @@ export class UserRepository extends BaseRepository<
           code,
         })),
       });
-    } catch (error) {
-      this.logger.error({ err: error, userId }, 'Error adding backup codes');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, userId }, 'Error adding backup codes');
+      throw _error;
     }
   }
 
@@ -290,9 +290,9 @@ export class UserRepository extends BaseRepository<
       });
 
       return true;
-    } catch (error) {
-      this.logger.error({ err: error, userId }, 'Error using backup code');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error, userId }, 'Error using backup code');
+      throw _error;
     }
   }
 
@@ -322,9 +322,9 @@ export class UserRepository extends BaseRepository<
       ]);
 
       return { users, total };
-    } catch (error) {
-      this.logger.error({ err: error }, 'Error finding all users');
-      throw error;
+    } catch (_error) {
+      this.logger.error({ err: _error }, 'Error finding all users');
+      throw _error;
     }
   }
 }

@@ -1,6 +1,4 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
-import pino from 'pino';
-
 describe('Pino Logger Configuration', () => {
   let originalEnv: NodeJS.ProcessEnv;
 
@@ -88,7 +86,7 @@ describe('Pino Logger Configuration', () => {
       const logger = require('./logger').default;
 
       // Create a logger with redaction paths
-      const testData = {
+      const _testData = {
         user: 'john',
         password: 'secret123',
         data: {
@@ -106,7 +104,7 @@ describe('Pino Logger Configuration', () => {
     it('should redact authorization headers', () => {
       const logger = require('./logger').default;
 
-      const testData = {
+      const _testData = {
         headers: {
           authorization: 'Bearer token123',
           'content-type': 'application/json',
@@ -120,7 +118,7 @@ describe('Pino Logger Configuration', () => {
     it('should redact JWT tokens', () => {
       const logger = require('./logger').default;
 
-      const testData = {
+      const _testData = {
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         refreshToken: 'refresh-token-value',
         data: 'non-sensitive',
@@ -193,12 +191,12 @@ describe('Pino Logger Configuration', () => {
       process.env.LOG_LEVEL = 'error';
       const logger = require('./logger').default;
 
-      const debugSpy = jest.spyOn(logger, 'debug');
+      const _debugSpy = jest.spyOn(logger, 'debug');
 
       // Debug messages should not be processed when level is error
       logger.debug('This should not be processed');
 
-      expect(debugSpy).toHaveBeenCalled();
+      expect(_debugSpy).toHaveBeenCalled();
       // In Pino, the message is still called but not written to output
     });
   });

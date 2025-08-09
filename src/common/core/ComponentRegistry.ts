@@ -131,7 +131,7 @@ export class ComponentRegistry implements IComponentRegistry {
         try {
           // Check if index.ts exists
           statSync(indexPath);
-        } catch (error) {
+        } catch (_error) {
           this.logger.debug(`Skipping ${dir}: No index.ts file found in component directory`);
           continue;
         }
@@ -151,9 +151,9 @@ export class ComponentRegistry implements IComponentRegistry {
               `Invalid component structure in ${dir}: Missing required properties (name, version, router, basePath)`
             );
           }
-        } catch (error) {
+        } catch (_error) {
           this.logger.debug(
-            { err: error },
+            { err: _error },
             `Failed to import component from ${dir}: Module import error`
           );
         }

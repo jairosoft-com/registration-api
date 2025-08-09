@@ -35,12 +35,21 @@ module.exports = [
     rules: {
       ...typescript.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      // Let TypeScript handle undefined checks; avoid false positives on Node globals
+      'no-undef': 'off',
       'prettier/prettier': 'error',
     },
   },
   {
-    files: ['**/*.spec.ts', '**/*.test.ts'],
+    files: ['**/*.spec.ts', '**/*.test.ts', 'src/common/test/**/*.ts', '__tests__/**/*.ts'],
     languageOptions: {
       globals: {
         // Jest globals
@@ -54,6 +63,24 @@ module.exports = [
         jest: 'readonly',
         test: 'readonly',
       },
+    },
+    rules: {
+      // Allow require() in tests/spec utilities
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-undef': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    files: ['src/database/repositories/mock.user.repository.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {

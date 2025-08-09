@@ -112,9 +112,18 @@ describe('Configuration Module', () => {
       process.env.JWT_SECRET = 'short-secret';
 
       // Act & Assert
-      expect(() => {
+      const exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => undefined) as any);
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation((..._args: unknown[]) => undefined as any);
+      try {
         require('./index');
-      }).toThrow();
+      } catch (_e) {
+        // Module may throw after process.exit is mocked; the important part is that exit was called
+      }
+      expect(exitSpy).toHaveBeenCalledWith(1);
+      consoleSpy.mockRestore();
+      exitSpy.mockRestore();
     });
   });
 });

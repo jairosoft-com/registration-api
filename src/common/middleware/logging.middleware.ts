@@ -55,12 +55,13 @@ const extractUserId = (req: Request): string | undefined => {
     // This is a simplified version - in a real app, you'd decode the JWT
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      // For now, we'll just return a placeholder
-      // In a real implementation, you'd decode the JWT and extract the user ID
-      return 'user_id_from_token';
+      // Prefer req.user.id if middleware populated it
+      const userIdFromReq = (req as any).user?.id || (req as any).user?.userId;
+      if (userIdFromReq) return String(userIdFromReq);
+      return undefined;
     }
     return undefined;
-  } catch (error) {
+  } catch (_error) {
     return undefined;
   }
 };
