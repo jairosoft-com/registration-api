@@ -26,6 +26,10 @@ export const errorMiddleware = (
   if (error instanceof ApiError) {
     statusCode = error.statusCode;
     message = error.message;
+  } else if ((error as any)?.type === 'entity.parse.failed' || error instanceof SyntaxError) {
+    // Handle malformed JSON body parser errors
+    statusCode = 400;
+    message = 'Invalid JSON payload';
   } else if (error instanceof ZodError) {
     statusCode = 400;
     // Format Zod errors for a more user-friendly message

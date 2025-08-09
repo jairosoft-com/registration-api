@@ -140,6 +140,24 @@ export const responseLogger = (req: Request, res: Response, next: NextFunction) 
   res.send = function (body) {
     const responseTime = Date.now() - req.startTime;
 
+    // Compute content length safely regardless of body type
+    let computedContentLength: number | undefined;
+    try {
+      if (typeof body === 'string') {
+        computedContentLength = Buffer.byteLength(body, 'utf8');
+      } else if (Buffer.isBuffer(body)) {
+        computedContentLength = body.length;
+      } else if (body !== undefined && body !== null) {
+        // Attempt to stringify objects (e.g., res.json payloads)
+        const serialized = JSON.stringify(body);
+        computedContentLength = Buffer.byteLength(serialized, 'utf8');
+      } else {
+        computedContentLength = 0;
+      }
+    } catch (_e) {
+      computedContentLength = undefined;
+    }
+
     // Create response log
     const responseLog: ResponseLog = {
       method: req.method,
@@ -149,7 +167,7 @@ export const responseLogger = (req: Request, res: Response, next: NextFunction) 
       timestamp: new Date().toISOString(),
       requestId: req.requestId,
       userId,
-      contentLength: body ? Buffer.byteLength(body, 'utf8') : 0,
+      contentLength: computedContentLength,
     };
 
     // Log response with appropriate level

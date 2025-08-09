@@ -5,6 +5,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 ## 🚀 Features
 
 ### Core Infrastructure
+
 - **TypeScript 5.8+** - Full type safety with strict mode and latest ES2022 features
 - **Express.js 5.1** - Latest version with component-based architecture
 - **Prisma ORM** - Type-safe database access with migrations and schema management
@@ -16,6 +17,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - **Docker & Docker Compose** - Production-optimized multi-stage builds
 
 ### 🔄 Real-time Features (Phase 5)
+
 - **WebSocket Server** - Socket.IO with authentication and real-time messaging
 - **Event-Driven Architecture** - Event emission, logging, and replay capabilities
 - **Real-time Notifications** - Live user notifications and system messages
@@ -23,6 +25,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - **Room-based Communication** - Group messaging and typing indicators
 
 ### 🔐 Advanced Security (Phase 5)
+
 - **OAuth 2.0 Integration** - Google, GitHub, and Facebook authentication
 - **Two-Factor Authentication** - TOTP with QR codes and backup codes
 - **Account Security** - Brute force protection and account locking
@@ -30,6 +33,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - **Input Validation** - Zod schema validation for all inputs
 
 ### 🏗️ Microservices Architecture (Phase 5)
+
 - **Service Discovery** - Dynamic service registration and health monitoring
 - **API Gateway** - Request routing, load balancing, and circuit breaking
 - **Load Balancing** - Multiple strategies (round-robin, least-connections, random)
@@ -37,6 +41,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - **Health Monitoring** - Real-time service health checks
 
 ### Developer Experience
+
 - **Pino Logger** - High-performance structured logging with request tracking
 - **Error Handling** - Centralized error handling with custom ApiError class
 - **Code Quality** - ESLint + Prettier with pre-commit hooks
@@ -49,14 +54,17 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 ## 🔎 Project analysis and recommendations
 
 ### Summary
+
 - This codebase is a strong Express 5 + TypeScript template with component-based architecture, Prisma/Mongoose/Redis integrations, robust logging/error handling, and comprehensive docs/tests. A few inconsistencies can impact DX and production builds.
 
 ### Strengths
+
 - Modular components with auto-discovery, centralized error handling, structured Pino logs, rate limiting, and health/readiness/liveness probes.
 - Dual data layer support (Prisma + Mongoose) with a repository pattern and feature flag.
 - Developer experience: generators, scripts, strict TS, Jest/Playwright, Docker.
 
 ### Notable inconsistencies and risks
+
 - Swagger docs scan the wrong paths, so `/api-docs` may miss component endpoints.
   - Current: `apis: ['./src/api/**/*.routes.ts', './src/api/**/*.controller.ts']`
   - Components live under `src/components/**`.
@@ -71,6 +79,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
 - Logging extracts a placeholder `user_id_from_token` instead of decoding JWT or using `req.user?.id`.
 
 ### Recommended fixes (actionable)
+
 - Swagger:
   - Update `src/config/swagger.ts` `apis` to:
     - `./src/components/**/*.routes.ts`
@@ -93,6 +102,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
   - If keeping `api-docs/openapi.yaml` (Class Registration API), document how it’s served or clarify it’s illustrative.
 
 ### Verification checklist
+
 - Type, lint, test, build:
   - `npm run type-check`
   - `npm run lint`
@@ -106,6 +116,7 @@ A production-grade, AI-friendly template for Express.js microservices with TypeS
   - In prod build, components auto-discover correctly with `.js` files.
 
 ### Scope clarifications
+
 - The included `api-docs/openapi.yaml` describes a separate “Class Registration API” (`/v1/registration` etc.) and is not wired to `/api-docs`. If intended to be authoritative, either:
   - Serve this YAML through Swagger UI, or
   - Remove/relocate it to avoid confusion and rely on JSDoc annotations in components.
@@ -125,6 +136,7 @@ These changes will make the template fully coherent in both development and prod
 ## 🛠️ Getting Started
 
 ### Quick Start (Docker)
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -138,6 +150,7 @@ docker-compose up
 ```
 
 ### Local Development Setup
+
 ```bash
 # Install dependencies
 npm install
@@ -154,6 +167,7 @@ npm run dev
 ```
 
 ### First-Time Setup
+
 ```bash
 # Run automated setup script
 npm run setup:dev
@@ -168,33 +182,34 @@ npm run setup:dev
 
 ## 📜 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build TypeScript to JavaScript |
-| `npm start` | Start production server |
-| `npm test` | Run unit and integration tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:e2e` | Run end-to-end tests with Playwright |
-| `npm run test:e2e:report` | Show Playwright test report |
-| `npm run lint` | Run ESLint for code quality |
-| `npm run lint:fix` | Fix ESLint errors automatically |
-| `npm run seed` | Seed database with initial data |
-| `npm run generate:test-data` | Generate test data for development |
-| `npm run setup:dev` | Setup development environment |
-| `npm run health` | Check API health status |
-| `npm run docs` | View API documentation URL |
-| `npm run clean` | Clean build artifacts and test results |
-| `npm run reset` | Reset project to clean state |
-| `npm run generate:component` | Generate new component with all files |
-| `npm run generate:test` | Generate test file for existing code |
-| `npx prisma studio` | Open Prisma Studio for database management |
-| `npx prisma migrate dev` | Create and apply database migrations |
-| `npx prisma db push` | Push schema changes without migration |
+| Script                       | Description                                |
+| ---------------------------- | ------------------------------------------ |
+| `npm run dev`                | Start development server with hot reload   |
+| `npm run build`              | Build TypeScript to JavaScript             |
+| `npm start`                  | Start production server                    |
+| `npm test`                   | Run unit and integration tests             |
+| `npm run test:watch`         | Run tests in watch mode                    |
+| `npm run test:e2e`           | Run end-to-end tests with Playwright       |
+| `npm run test:e2e:report`    | Show Playwright test report                |
+| `npm run lint`               | Run ESLint for code quality                |
+| `npm run lint:fix`           | Fix ESLint errors automatically            |
+| `npm run seed`               | Seed database with initial data            |
+| `npm run generate:test-data` | Generate test data for development         |
+| `npm run setup:dev`          | Setup development environment              |
+| `npm run health`             | Check API health status                    |
+| `npm run docs`               | View API documentation URL                 |
+| `npm run clean`              | Clean build artifacts and test results     |
+| `npm run reset`              | Reset project to clean state               |
+| `npm run generate:component` | Generate new component with all files      |
+| `npm run generate:test`      | Generate test file for existing code       |
+| `npx prisma studio`          | Open Prisma Studio for database management |
+| `npx prisma migrate dev`     | Create and apply database migrations       |
+| `npx prisma db push`         | Push schema changes without migration      |
 
 ## 🔄 Real-time Features
 
 ### WebSocket Server
+
 - **URL**: `ws://localhost:4010`
 - **Authentication**: JWT token required
 - **Features**:
@@ -205,6 +220,7 @@ npm run setup:dev
   - Activity broadcasting
 
 ### Event System
+
 - **Event Types**: User, System, Data, Notification events
 - **Features**:
   - Priority-based event handling
@@ -215,6 +231,7 @@ npm run setup:dev
 ## 🔐 Advanced Security
 
 ### OAuth Providers
+
 - **Google OAuth**: Profile and email access
 - **GitHub OAuth**: Repository and user data
 - **Facebook OAuth**: Social profile integration
@@ -225,6 +242,7 @@ npm run setup:dev
   - Provider-specific data handling
 
 ### Two-Factor Authentication
+
 - **TOTP Implementation**: RFC 6238 compliant
 - **QR Code Generation**: For authenticator apps
 - **Backup Codes**: 10 secure backup codes
@@ -237,6 +255,7 @@ npm run setup:dev
 ## 🏗️ Microservices Architecture
 
 ### Service Discovery
+
 - **Health Monitoring**: Real-time service health checks
 - **Load Balancing**: Round-robin, least-connections, random
 - **Features**:
@@ -246,6 +265,7 @@ npm run setup:dev
   - Service statistics and metrics
 
 ### API Gateway
+
 - **Routing**: Dynamic service routing
 - **Authentication**: JWT token validation
 - **Rate Limiting**: Per-service rate limiting
@@ -258,6 +278,7 @@ npm run setup:dev
 ## 🐳 Docker Setup
 
 ### Development Environment
+
 ```bash
 # Start all services (app + databases)
 docker-compose up
@@ -270,6 +291,7 @@ docker-compose logs -f app
 ```
 
 ### Production Build
+
 ```bash
 # Build production image
 docker build -t express-microservice .
@@ -279,6 +301,7 @@ docker run -p 4010:4010 --env-file .env express-microservice
 ```
 
 ### E2E Testing Container
+
 ```bash
 # Run E2E tests in isolated container
 docker-compose run playwright-tests npm run test:e2e
@@ -287,13 +310,16 @@ docker-compose run playwright-tests npm run test:e2e
 ## 🔌 API Endpoints
 
 ### Health Check
+
 - `GET /` - Returns API health status
 - `GET /api/v1/health` - Comprehensive health check
 - `GET /api/v1/health/ready` - Readiness probe
 - `GET /api/v1/health/live` - Liveness probe
 
 ### User Authentication
+
 - `POST /api/v1/users/register` - Register a new user
+
   ```json
   {
     "firstName": "John",
@@ -312,17 +338,20 @@ docker-compose run playwright-tests npm run test:e2e
   ```
 
 ### OAuth Authentication
+
 - `GET /api/v1/auth/google` - Google OAuth login
 - `GET /api/v1/auth/github` - GitHub OAuth login
 - `GET /api/v1/auth/facebook` - Facebook OAuth login
 
 ### Two-Factor Authentication
+
 - `POST /api/v1/auth/2fa/setup` - Setup 2FA
 - `POST /api/v1/auth/2fa/verify` - Verify 2FA token
 - `POST /api/v1/auth/2fa/disable` - Disable 2FA
 - `POST /api/v1/auth/2fa/backup-codes` - Generate backup codes
 
 ### Real-time Features
+
 - `ws://localhost:4010` - WebSocket connection
 - Real-time notifications and messaging
 - User presence tracking
@@ -330,35 +359,40 @@ docker-compose run playwright-tests npm run test:e2e
 ## 🏗️ Project Architecture
 
 ### Component-Based Architecture
+
 This template follows a component-based architecture with auto-discovery:
 
 - **Components** - Self-contained feature modules with all related files
 - **Controller Layer** - HTTP request/response handling and routing
-- **Service Layer** - Business logic, orchestration, and data processing  
+- **Service Layer** - Business logic, orchestration, and data processing
 - **Repository Layer** - Data access abstraction with Prisma ORM
 - **Validation Layer** - Input validation with Zod schemas
 - **Common Layer** - Shared utilities, constants, and types
 
 ### Microservices Architecture
+
 - **API Gateway** - Request routing and load balancing
 - **Service Discovery** - Dynamic service registration
 - **Event-Driven Communication** - Asynchronous service communication
 - **Circuit Breaker Pattern** - Fault tolerance and resilience
 
 ### Component Structure
+
 Each component is self-contained with standardized file organization:
+
 ```
 src/components/users/
 ├── index.ts              # Component exports and auto-discovery
 ├── user.controller.ts    # Request/Response handling
 ├── user.service.ts       # Business logic
-├── user.routes.ts        # Route definitions  
+├── user.routes.ts        # Route definitions
 ├── user.types.ts         # TypeScript interfaces
 ├── user.validation.ts    # Zod validation schemas
 └── user.service.spec.ts  # Unit tests
 ```
 
 ### Repository Pattern
+
 ```
 src/repositories/
 ├── base.repository.ts    # Generic CRUD operations
@@ -473,6 +507,7 @@ template-expressjs-typescript-mongodb-pgsql-2025/
    - Visual regression testing support
 
 ### Running Tests
+
 ```bash
 # Unit tests only
 npm test
@@ -493,7 +528,43 @@ npm run test:e2e:report
 npm run generate:test src/services/example.service.ts
 ```
 
+### E2E with Mock Server
+
+You can run Playwright end-to-end tests against a mock server (no external DBs). Choose one of the following:
+
+#### Option A — Automatic (recommended)
+
+- Run:
+
+```bash
+npm run test:e2e
+```
+
+- Playwright will auto-start the server using its webServer config (`SKIP_DB_CONNECTION=true PORT=4010 npm run dev`) and reuse it locally. Ensure your `.env` contains a valid `JWT_SECRET` or export it before running.
+
+#### Option B — Manual
+
+1. Start the API in mock mode in one terminal:
+
+```bash
+export SKIP_DB_CONNECTION=true USE_PRISMA=false JWT_SECRET='abcdefghijklmnopqrstuvwxyz012345' PORT=4010
+npm run dev
+```
+
+2. In a second terminal, run the tests:
+
+```bash
+npm run test:e2e
+```
+
+Notes:
+
+- Rate limiting is disabled automatically in mock mode (`SKIP_DB_CONNECTION=true`).
+- Health endpoints are available at `/`, `/api/v1/health`, `/api/v1/health/ready`, `/api/v1/health/live`.
+- If you see connection errors, make sure the server is listening on `http://localhost:4010` and the port is free.
+
 ### Test Utilities
+
 - **Test Helpers** - Mock request/response, auth helpers
 - **Mock Factories** - Pre-configured mocks for dependencies
 - **Data Factories** - Generate realistic test data with Faker.js
@@ -534,6 +605,7 @@ FACEBOOK_CLIENT_SECRET=your_facebook_client_secret
 ```
 
 ### Environment Validation
+
 The application uses Zod to validate all environment variables at startup, ensuring configuration integrity.
 
 ## 🔒 Security Features
@@ -552,6 +624,7 @@ The application uses Zod to validate all environment variables at startup, ensur
 ## 🚀 Deployment
 
 ### Production Checklist
+
 - [ ] Set all required environment variables
 - [ ] Configure production database with connection pooling
 - [ ] Run Prisma migrations: `npx prisma migrate deploy`
@@ -567,6 +640,7 @@ The application uses Zod to validate all environment variables at startup, ensur
 - [ ] Enable security headers (CSP, HSTS)
 
 ### Docker Production
+
 ```bash
 # Build optimized production image
 docker build --target production -t express-microservice:latest .
@@ -583,6 +657,7 @@ docker run -d \
 ```
 
 ### Kubernetes Deployment
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -596,33 +671,36 @@ spec:
   template:
     spec:
       containers:
-      - name: app
-        image: express-microservice:latest
-        ports:
-        - containerPort: 4010
-        livenessProbe:
-          httpGet:
-            path: /api/v1/health/live
-        readinessProbe:
-          httpGet:
-            path: /api/v1/health/ready
+        - name: app
+          image: express-microservice:latest
+          ports:
+            - containerPort: 4010
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health/live
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health/ready
 ```
 
 ## 📊 Monitoring & Observability
 
 ### Health Checks
+
 - **Root Health**: `GET /` - Basic API health
 - **Comprehensive Health**: `GET /api/v1/health` - Full system health
 - **Readiness Probe**: `GET /api/v1/health/ready` - Kubernetes readiness
 - **Liveness Probe**: `GET /api/v1/health/live` - Kubernetes liveness
 
 ### Logging
+
 - **Structured Logging** - Winston with JSON formatting
 - **Request Logging** - All HTTP requests and responses
 - **Performance Monitoring** - Response time tracking
 - **Error Logging** - Comprehensive error tracking
 
 ### Metrics
+
 - **Service Discovery** - Service health and statistics
 - **API Gateway** - Request routing and performance metrics
 - **Event System** - Event processing statistics
@@ -631,6 +709,7 @@ spec:
 ## 🤝 Contributing
 
 ### Development Workflow
+
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/your-feature`
 3. Generate component if needed: `npm run generate:component`
@@ -643,6 +722,7 @@ spec:
 10. Push and create a pull request
 
 ### Code Standards
+
 - Follow TypeScript strict mode
 - Write comprehensive tests (aim for 80%+ coverage)
 - Use Zod for all input validation
@@ -656,6 +736,7 @@ ISC License - see LICENSE file for details.
 ## 🆘 Support
 
 For issues and questions:
+
 1. Check the existing issues
 2. Review the documentation
 3. Create a new issue with detailed information
@@ -675,6 +756,7 @@ For issues and questions:
 ### 🎯 Key Features Summary
 
 #### ✅ **Phase 1: Core Setup**
+
 - Express.js server with TypeScript
 - Multi-database support (MongoDB, PostgreSQL, Redis)
 - JWT authentication system
@@ -682,12 +764,14 @@ For issues and questions:
 - Input validation with Zod
 
 #### ✅ **Phase 2: Testing & Quality**
+
 - Unit tests with Jest
 - Integration tests
 - E2E tests with Playwright
 - Test coverage reporting
 
 #### ✅ **Phase 3: Production Readiness**
+
 - Comprehensive error handling
 - Structured logging with Winston
 - Performance monitoring
@@ -695,6 +779,7 @@ For issues and questions:
 - CI/CD pipeline
 
 #### ✅ **Phase 4: Component Architecture & Prisma**
+
 - Component-based architecture with auto-discovery
 - Prisma ORM integration with migrations
 - Repository pattern implementation
@@ -702,6 +787,7 @@ For issues and questions:
 - Feature flag system
 
 #### ✅ **Phase 5: Developer Experience & Polish**
+
 - Component and test generators
 - Comprehensive test utilities
 - Enhanced documentation
@@ -710,6 +796,7 @@ For issues and questions:
 - AI-friendly code structure
 
 #### ✅ **Phase 6: Advanced Features**
+
 - **Real-time Features**: WebSocket server with Socket.IO, event-driven architecture
 - **Advanced Security**: OAuth 2.0 integration, two-factor authentication
 - **Microservices Architecture**: Service discovery, API Gateway, load balancing

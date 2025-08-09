@@ -119,9 +119,10 @@ import { UserRegistrationSchema, UserLoginSchema } from './users.validation';
  */
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Validate request body using Zod schema
-    const validatedBody = UserRegistrationSchema.parse(req.body);
-    const { user, token } = await service.registerNewUser(validatedBody.body);
+    // Validate request body using Zod schema (supports nested or flat shapes)
+    const validated = UserRegistrationSchema.parse(req.body);
+    const payload = (validated as any).body ? (validated as any).body : (validated as any);
+    const { user, token } = await service.registerNewUser(payload);
     res.status(201).json({
       message: 'User registered successfully',
       data: { user, token },
@@ -233,12 +234,10 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
  */
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Validate request body using Zod schema
-    const validatedBody = UserLoginSchema.parse(req.body);
-    const { user, token } = await service.loginUser(
-      validatedBody.body.email,
-      validatedBody.body.password
-    );
+    // Validate request body using Zod schema (supports nested or flat shapes)
+    const validated = UserLoginSchema.parse(req.body);
+    const payload = (validated as any).body ? (validated as any).body : (validated as any);
+    const { user, token } = await service.loginUser(payload.email, payload.password);
     res.status(200).json({
       message: 'Login successful',
       data: { user, token },

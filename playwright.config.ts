@@ -16,11 +16,11 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
-  // Commented out webServer config - we'll start the server manually or use Docker
-  // webServer: {
-  //   command: 'PORT=4010 npm run dev',
-  //   url: 'http://localhost:4010',
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120 * 1000,
-  // },
+  // Start the app for E2E tests using a mock DB mode
+  webServer: {
+    command: 'SKIP_DB_CONNECTION=true PORT=4010 npm run dev',
+    url: 'http://localhost:4010',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
 });

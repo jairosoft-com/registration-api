@@ -91,6 +91,28 @@ interface HealthCheck {
  */
 export const getHealth = async (_req: Request, res: Response) => {
   try {
+    // Short-circuit when running in mock mode (no external deps)
+    if (process.env.SKIP_DB_CONNECTION === 'true') {
+      const healthStatus: HealthStatus = {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: config.nodeEnv,
+        version: '1.0.0',
+        checks: {
+          database: {
+            mongodb: { status: 'healthy', message: 'Mock mode', responseTime: 1 },
+            postgres: { status: 'healthy', message: 'Mock mode', responseTime: 1 },
+            redis: { status: 'healthy', message: 'Mock mode', responseTime: 1 },
+          },
+          memory: { status: 'healthy', message: 'Mock mode' },
+          disk: { status: 'healthy', message: 'Mock mode' },
+        },
+      } as unknown as HealthStatus;
+
+      return res.status(200).json(healthStatus);
+    }
+
     // Check database connections
     const dbChecks = await checkDatabases();
 
@@ -132,11 +154,11 @@ export const getHealth = async (_req: Request, res: Response) => {
 
     const statusCode = overallStatus === 'healthy' ? 200 : 503;
 
-    res.status(statusCode).json(healthStatus);
+    return res.status(statusCode).json(healthStatus);
   } catch (error) {
     logger.error({ error }, 'Health check failed');
 
-    res.status(503).json({
+    return res.status(503).json({
       status: 'unhealthy',
       message: 'Health check failed',
       timestamp: new Date().toISOString(),
@@ -183,6 +205,11 @@ export const getHealth = async (_req: Request, res: Response) => {
  */
 export const getReadiness = async (_req: Request, res: Response) => {
   try {
+    if (process.env.SKIP_DB_CONNECTION === 'true') {
+      return res
+        .status(200)
+        .json({ status: 'ready', timestamp: new Date().toISOString(), ready: true });
+    }
     // Check if all critical dependencies are available
     const dbChecks = await checkDatabases();
     const criticalChecks = [dbChecks.mongodb, dbChecks.postgres, dbChecks.redis];
@@ -190,12 +217,13 @@ export const getReadiness = async (_req: Request, res: Response) => {
     const isReady = criticalChecks.every((check) => check.status === 'healthy');
 
     if (isReady) {
-      res.status(200).json({
+      return res.status(200).json({
         status: 'ready',
         timestamp: new Date().toISOString(),
+        ready: true,
       });
     } else {
-      res.status(503).json({
+      return res.status(503).json({
         status: 'not ready',
         message: 'Critical dependencies are not available',
         timestamp: new Date().toISOString(),
@@ -204,7 +232,7 @@ export const getReadiness = async (_req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, 'Readiness check failed');
 
-    res.status(503).json({
+    return res.status(503).json({
       status: 'not ready',
       message: 'Readiness check failed',
       timestamp: new Date().toISOString(),
@@ -243,6 +271,7 @@ export const getLiveness = (_req: Request, res: Response) => {
     status: 'alive',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    alive: true,
   });
 };
 

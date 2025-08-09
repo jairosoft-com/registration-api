@@ -1,7 +1,9 @@
 import { UserPublicData } from '@components/users/users.types';
+import { ApiError } from '@common/utils/ApiError';
 
 // In-memory storage for testing
 const users = new Map<string, any>();
+const emailLocks = new Set<string>();
 
 export const mockUserRepository = {
   async findByEmail(email: string): Promise<UserPublicData | null> {
@@ -24,16 +26,36 @@ export const mockUserRepository = {
   },
 
   async create(userData: any): Promise<UserPublicData> {
-    const id = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const user = {
-      id,
-      ...userData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    users.set(id, user);
-    const { password, ...publicData } = user;
-    return publicData;
+    const email: string = (userData?.email || '').toLowerCase();
+
+    // Synchronous uniqueness check to avoid race between concurrent requests
+    for (const u of users.values()) {
+      if ((u.email || '').toLowerCase() === email) {
+        throw new ApiError(409, 'Email already in use', true);
+      }
+    }
+
+    // Acquire a simple lock for this email to prevent duplicate inserts within this event loop turn
+    if (emailLocks.has(email)) {
+      throw new ApiError(409, 'Email already in use', true);
+    }
+    emailLocks.add(email);
+
+    try {
+      const id = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      const user = {
+        id,
+        ...userData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      users.set(id, user);
+
+      const { password, ...publicData } = user;
+      return publicData;
+    } finally {
+      emailLocks.delete(email);
+    }
   },
 
   async findById(id: string): Promise<UserPublicData | null> {

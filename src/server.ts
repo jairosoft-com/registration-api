@@ -29,12 +29,18 @@ import { oauthService } from '@/services/oauth.service';
 // Phase 5: Microservices Architecture
 import { serviceDiscoveryService } from '@/services/service-discovery.service';
 import { apiGatewayService } from '@/services/api-gateway.service';
+import healthComponent from '@/components/health';
+import usersComponent from '@/components/users';
 
 const app: Express = express();
 
 // Security Middleware
 app.use(helmet());
 app.use(cors({ origin: config.corsOrigin }));
+
+// Determine whether to disable rate limits (useful for E2E/mock mode)
+const disableRateLimit =
+  process.env.NODE_ENV === 'test' || process.env.SKIP_DB_CONNECTION === 'true';
 
 // General rate limiting for all requests
 const generalLimiter = rateLimit({
@@ -62,8 +68,10 @@ const authLimiter = rateLimit({
   },
 });
 
-// Apply general rate limiting to all requests
-app.use(generalLimiter);
+// Apply general rate limiting to all requests (skip in test/mock mode)
+if (!disableRateLimit) {
+  app.use(generalLimiter);
+}
 
 // Parse request bodies
 app.use(express.json());
@@ -116,9 +124,11 @@ app.get('/', (_req: Request, res: Response) => {
   });
 });
 
-// Apply stricter rate limiting to authentication endpoints
-app.use('/api/v1/users/login', authLimiter);
-app.use('/api/v1/users/register', authLimiter);
+// Apply stricter rate limiting to authentication endpoints (skip in test/mock mode)
+if (!disableRateLimit) {
+  app.use('/api/v1/users/login', authLimiter);
+  app.use('/api/v1/users/register', authLimiter);
+}
 
 // Component auto-discovery and route mounting will happen in startServer
 
@@ -127,10 +137,7 @@ app.use('/api/v1/gateway', (req: Request, res: Response, next: NextFunction) => 
   apiGatewayService.routeRequest(req, res, next);
 });
 
-// Error Handling
-app.use((_req, _res, next) => next(new ApiError(404, 'Not Found')));
-app.use(errorLogger);
-app.use(errorMiddleware);
+// Note: Error handling is registered AFTER routes are mounted inside startServer
 
 /**
  * Start the server with database connections
@@ -153,12 +160,21 @@ const startServer = async () => {
     const componentsPath = join(__dirname, 'components');
     await componentRegistry.autoDiscover(componentsPath);
 
+    // Ensure critical components are registered even if auto-discovery fails
+    componentRegistry.register(healthComponent);
+    componentRegistry.register(usersComponent);
+
     // Initialize all components
     await componentRegistry.initializeAll();
 
     // Mount component routes
     componentRegistry.mountRoutes(app);
     logger.info(`Mounted ${componentRegistry.getStats().total} components`);
+
+    // Error Handling (must come after routes)
+    app.use((_req, _res, next) => next(new ApiError(404, 'Not Found')));
+    app.use(errorLogger);
+    app.use(errorMiddleware);
 
     // Phase 5: Initialize services
     logger.info('Initializing Phase 5 services...');

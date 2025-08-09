@@ -3,6 +3,6 @@
   "ext": "ts,json",
   "ignore": ["src/**/*.spec.ts"],
   "execMap": {
-    "ts": "node -r ts-node/register/transpile-only"
+    "ts": "node -r ts-node/register/transpile-only -r tsconfig-paths/register"
   }
 }

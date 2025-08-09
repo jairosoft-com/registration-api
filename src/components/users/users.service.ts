@@ -35,18 +35,21 @@ export class UserService extends BaseService {
   async registerNewUser(
     userData: UserRegistrationInput
   ): Promise<{ user: UserPublicData; token: string }> {
+    // Normalize potential nested shapes (tests send {body:{...}})
+    const normalized: any = (userData as any).body ? (userData as any).body : userData;
+
     // Check if user already exists
-    const existingUser = await this.repository.findByEmail(userData.email);
+    const existingUser = await this.repository.findByEmail(normalized.email);
     if (existingUser) {
       throw ApiError.conflict('Email already in use');
     }
 
     // Create user using repository (password hashing handled by Prisma repository)
     const newUser = USE_PRISMA
-      ? await this.repository.createUser(userData)
+      ? await this.repository.createUser(normalized)
       : await this.repository.create({
-          ...userData,
-          password: await bcrypt.hash(userData.password, 10),
+          ...normalized,
+          password: await bcrypt.hash(normalized.password, 10),
         });
 
     // Generate JWT token

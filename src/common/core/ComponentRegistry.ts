@@ -126,34 +126,48 @@ export class ComponentRegistry implements IComponentRegistry {
 
       for (const dir of directories) {
         const componentPath = join(componentsPath, dir);
-        const indexPath = join(componentPath, 'index.ts');
+        const tsIndex = join(componentPath, 'index.ts');
+        const jsIndex = join(componentPath, 'index.js');
 
+        // Prefer compiled JS in production, fallback to TS in dev
+        let entryPath: string | null = null;
         try {
-          // Check if index.ts exists
-          statSync(indexPath);
-        } catch (_error) {
-          this.logger.debug(`Skipping ${dir}: No index.ts file found in component directory`);
-          continue;
+          statSync(jsIndex);
+          entryPath = jsIndex;
+        } catch {
+          try {
+            statSync(tsIndex);
+            entryPath = tsIndex;
+          } catch {
+            this.logger.debug(
+              `Skipping ${dir}: No index.ts or index.js file found in component directory`
+            );
+            continue;
+          }
         }
 
         try {
-          // Try to import the component
-          const module = await import(indexPath);
+          // Robust dynamic import using file URL (works with NodeNext)
+          const { pathToFileURL } = await import('url');
+          const moduleUrl = pathToFileURL(entryPath).href;
+          const module = await import(moduleUrl);
 
           if (module.default && this.isValidComponent(module.default)) {
             const component = module.default as IComponent;
             this.register(component);
+            this.logger.info(`Imported ${dir} from ${entryPath}`);
           } else if (module.component && this.isValidComponent(module.component)) {
             const component = module.component as IComponent;
             this.register(component);
+            this.logger.info(`Imported ${dir} (named export) from ${entryPath}`);
           } else {
             this.logger.warn(
               `Invalid component structure in ${dir}: Missing required properties (name, version, router, basePath)`
             );
           }
         } catch (_error) {
-          this.logger.debug(
-            { err: _error },
+          this.logger.error(
+            { err: _error, entryPath },
             `Failed to import component from ${dir}: Module import error`
           );
         }
