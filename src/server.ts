@@ -31,6 +31,8 @@ import { serviceDiscoveryService } from '@/services/service-discovery.service';
 import { apiGatewayService } from '@/services/api-gateway.service';
 import healthComponent from '@/components/health';
 import usersComponent from '@/components/users';
+import registrationComponent from '@/components/registration';
+import scheduleComponent from '@/components/schedule';
 
 const app: Express = express();
 
@@ -163,6 +165,8 @@ const startServer = async () => {
     // Ensure critical components are registered even if auto-discovery fails
     componentRegistry.register(healthComponent);
     componentRegistry.register(usersComponent);
+    componentRegistry.register(registrationComponent);
+    componentRegistry.register(scheduleComponent);
 
     // Initialize all components
     await componentRegistry.initializeAll();
