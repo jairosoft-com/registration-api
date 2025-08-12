@@ -4,7 +4,7 @@ import {
   validateRegistration,
   getRegistrationById,
 } from './registration.controller';
-import { apiKeyMiddleware } from '../../middleware/apikey.middleware';
+import { apiKeyMiddleware } from '../../common/middleware/apikey.middleware';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../common/utils/ApiError';
-import logger from '../common/utils/logger';
+import { ApiError } from '../utils/ApiError';
+import logger from '../utils/logger';
 
 // In production, these would be stored securely (database, env vars, etc.)
 const VALID_API_KEYS = new Set(

@@ -58,6 +58,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(409);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 409,
         message: 'Email already in use',
@@ -71,6 +72,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 500,
         message: 'Internal server error',
@@ -97,6 +99,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 400,
         message: 'body: Invalid email, Password must be at least 8 characters',
@@ -116,6 +119,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 400,
         message: 'body: Invalid email',
@@ -131,6 +135,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 500,
         message: 'An unexpected error occurred',
@@ -145,6 +150,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 500,
         message: 'An unexpected error occurred',
@@ -162,6 +168,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 500,
         message: 'An unexpected error occurred', // In test mode, this is the expected message
@@ -175,6 +182,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 400,
         message: 'Bad request',
@@ -205,6 +213,7 @@ describe('Error Middleware', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
+        success: false,
         status: 'error',
         statusCode: 500,
         message: 'An unexpected error occurred',

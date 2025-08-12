@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAvailableSchedules } from './schedule.controller';
-import { apiKeyMiddleware } from '../../middleware/apikey.middleware';
+import { apiKeyMiddleware } from '../../common/middleware/apikey.middleware';
 
 const router = Router();
 

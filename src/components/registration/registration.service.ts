@@ -1,4 +1,8 @@
-import { RegistrationModel } from '../../database/models/registration.model';
+import { RegistrationModel as MongooseRegistrationModel } from '../../database/models/registration.model';
+import {
+  MockRegistrationModel,
+  createMockRegistrationModel,
+} from '../../database/repositories/mock.registration.repository';
 import { ApiError } from '../../common/utils/ApiError';
 import logger from '../../common/utils/logger';
 import {
@@ -11,6 +15,15 @@ import {
   ValidationResponse,
   RegistrationDetails,
 } from './registration.types';
+
+// Use mock model when DB connection is skipped
+const RegistrationModel =
+  process.env.SKIP_DB_CONNECTION === 'true' ? MockRegistrationModel : MongooseRegistrationModel;
+
+const createRegistrationInstance =
+  process.env.SKIP_DB_CONNECTION === 'true'
+    ? createMockRegistrationModel
+    : (data: any) => new MongooseRegistrationModel(data);
 
 export class RegistrationService {
   /**
@@ -34,7 +47,7 @@ export class RegistrationService {
       const registrationId = `reg_${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
 
       // Create new registration
-      const registration = new RegistrationModel({
+      const registration = createRegistrationInstance({
         id: registrationId,
         firstName: data.firstName,
         lastName: data.lastName,
