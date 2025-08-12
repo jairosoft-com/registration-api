@@ -5,9 +5,20 @@ All notable changes to the Express.js TypeScript Microservice Template project w
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-08-12
+
+### Fixed
+
+- E2E stabilization: resolve 401 responses from registration endpoints during mock/testing by allowing a safe test API key when no keys are configured and `SKIP_DB_CONNECTION=true` or `NODE_ENV=test`.
+
+### Documentation
+
+- Updated `E2E_TODO.md` with baseline findings, applied fix details, verification steps, and PR status.
+
 ## [2.0.0] - 2025-08-07
 
 ### Summary
+
 Complete transformation of the Express.js TypeScript microservice template to achieve 95%+ AI-friendly compliance through five major implementation phases, modernizing architecture, enhancing developer experience, and establishing production-grade standards.
 
 ---
@@ -15,6 +26,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Phase 5: Final Polish and Developer Experience Enhancements [v2.0.0]
 
 ### Added
+
 - **Component and Test Generators**
   - Interactive TypeScript-based component generator at `scripts/generate-component.ts`
   - Automated test file generator at `scripts/generate-test.ts`
@@ -47,12 +59,14 @@ Complete transformation of the Express.js TypeScript microservice template to ac
   - Generator usage documentation
 
 ### Changed
+
 - Enhanced build process with multi-stage optimization
 - Updated ESLint configuration for stricter code quality
 - Improved TypeScript configuration for better developer experience
 - Streamlined package.json scripts for better workflow
 
 ### Fixed
+
 - Docker build optimization issues
 - Pre-commit hook configuration
 - Test environment setup consistency
@@ -63,6 +77,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Phase 4: Prisma ORM Integration [v1.4.0]
 
 ### Added
+
 - **Prisma ORM Implementation**
   - Complete Prisma setup with `prisma/schema.prisma`
   - PostgreSQL database schema with User, Session, and Log models
@@ -88,12 +103,14 @@ Complete transformation of the Express.js TypeScript microservice template to ac
   - Development vs production database settings
 
 ### Changed
+
 - Updated user service to use Prisma repository pattern
 - Enhanced authentication flow with Prisma-backed user management
 - Improved database connection handling with Prisma Client
 - Updated Docker configuration for Prisma migrations
 
 ### Fixed
+
 - Database connection pooling issues
 - TypeScript type generation for database models
 - Migration dependency management
@@ -104,6 +121,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Phase 3: Component Architecture Enhancement [v1.3.0]
 
 ### Added
+
 - **Auto-Discovery System**
   - Component auto-discovery in `src/common/utils/component-discovery.ts`
   - Dynamic router mounting based on file system structure
@@ -129,12 +147,14 @@ Complete transformation of the Express.js TypeScript microservice template to ac
   - Graceful service degradation handling
 
 ### Changed
+
 - Refactored existing components to use repository pattern
 - Enhanced component initialization and lifecycle management
 - Improved service layer organization and dependency management
 - Updated application bootstrap process for auto-discovery
 
 ### Fixed
+
 - Component loading race conditions
 - Service dependency resolution issues
 - Repository connection management
@@ -145,6 +165,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Phase 2: Core System Improvements [v1.2.0]
 
 ### Added
+
 - **Pino Structured Logging**
   - Complete migration from Winston to Pino
   - Structured JSON logging with correlation IDs
@@ -174,12 +195,14 @@ Complete transformation of the Express.js TypeScript microservice template to ac
   - Typing indicators and live updates
 
 ### Changed
+
 - Replaced Winston logging system with high-performance Pino
 - Enhanced middleware stack with better error context
 - Improved security middleware with 2FA integration
 - Updated authentication flow to support multi-factor authentication
 
 ### Fixed
+
 - Memory leaks in logging system
 - Error propagation in middleware chain
 - Security vulnerabilities in session management
@@ -190,6 +213,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Phase 1: Foundation and Architecture Restructuring [v1.1.0]
 
 ### Added
+
 - **Component-Based Architecture**
   - Restructured from `/api` to `/components` directory organization
   - Feature-based component grouping (users, health, auth)
@@ -215,6 +239,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
   - Enhanced IDE support and auto-completion
 
 ### Changed
+
 - **Directory Structure Overhaul**
   ```
   OLD: src/api/, src/middleware/, src/utils/, src/types/
@@ -225,6 +250,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 - Improved Jest configuration for new path mappings
 
 ### Fixed
+
 - Import path resolution issues
 - Configuration loading in different environments
 - Module dependency circular references
@@ -235,6 +261,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Legacy System [v1.0.0] - Initial State
 
 ### Previous Implementation
+
 - Traditional Express.js API structure with `/api` directory
 - Winston logging system
 - Basic error handling without operational error distinction
@@ -250,6 +277,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Technical Metrics
 
 ### AI-Friendly Compliance Achievement
+
 - **Phase 1**: 65% → 75% compliance (Directory structure, configuration, naming)
 - **Phase 2**: 75% → 82% compliance (Logging, error handling, security)
 - **Phase 3**: 82% → 88% compliance (Auto-discovery, repositories, components)
@@ -257,6 +285,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 - **Phase 5**: 92% → **95%+ compliance** (Generators, testing, documentation)
 
 ### Development Experience Improvements
+
 - **Component Generation**: Manual → Automated (3-minute setup to 30-second generation)
 - **Test Coverage**: 60% → 85%+ with comprehensive utilities
 - **Build Performance**: 45s → 12s with multi-stage Docker optimization
@@ -264,6 +293,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 - **Code Quality**: Manual checks → Automated with pre-commit hooks
 
 ### Production Readiness Enhancements
+
 - **Database Operations**: Raw queries → Type-safe Prisma ORM
 - **Logging Performance**: 15ms avg → 2ms avg with Pino
 - **Error Recovery**: Basic → Production-grade with circuit breakers
@@ -274,6 +304,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ---
 
 ## Contributors
+
 - **AI-Assisted Development**: Claude Code (Anthropic)
 - **Architecture Design**: Component-based microservices pattern
 - **Quality Assurance**: Test-driven development with comprehensive validation
@@ -284,6 +315,7 @@ Complete transformation of the Express.js TypeScript microservice template to ac
 ## Migration Notes
 
 ### From v1.0.0 to v2.0.0
+
 This is a **MAJOR** version update with significant breaking changes:
 
 1. **Directory Structure**: Complete reorganization requires import path updates
@@ -293,6 +325,7 @@ This is a **MAJOR** version update with significant breaking changes:
 5. **Configuration**: Enhanced validation may require environment variable updates
 
 ### Upgrade Path
+
 1. Update import paths for new directory structure
 2. Install Prisma dependencies and run migrations
 3. Update logging statements for Pino compatibility
@@ -300,6 +333,7 @@ This is a **MAJOR** version update with significant breaking changes:
 5. Update environment variables for new configuration system
 
 ### Backward Compatibility
+
 - **Breaking Changes**: Directory structure, logging API, database layer
 - **Deprecated Features**: Winston logging, direct database queries, manual component registration
 - **Migration Guide**: See ARCHITECTURE.md for detailed upgrade instructions
@@ -309,6 +343,7 @@ This is a **MAJOR** version update with significant breaking changes:
 ## Future Roadmap
 
 ### Planned Features
+
 - GraphQL API layer with Apollo Server integration
 - Advanced monitoring with OpenTelemetry
 - Multi-tenant architecture support
@@ -316,8 +351,9 @@ This is a **MAJOR** version update with significant breaking changes:
 - Advanced caching strategies with Redis
 
 ### Community Contributions
+
 We welcome contributions! Please see our contributing guidelines and ensure all changes maintain our 95%+ AI-friendly compliance standard.
 
 ---
 
-*This changelog documents the complete transformation from a basic Express.js template to a production-grade, AI-friendly microservices template achieving 95%+ compliance with modern development standards.*
+_This changelog documents the complete transformation from a basic Express.js template to a production-grade, AI-friendly microservices template achieving 95%+ compliance with modern development standards._
