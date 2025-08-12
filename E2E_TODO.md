@@ -27,8 +27,8 @@
 - [x] 4. Baseline E2E run: `npm run test:e2e`; catalog failures and group by cause
 - [x] 5. TDD loop: fix failures incrementally (users, registration, schedule, docs)
 - [x] 6. Cross-check stability: `npm test`, `npm run test:e2e`, and `npm run build`
-- [ ] 7. Update docs/configs if behavior or routes changed (Swagger globs, READMEs)
-- [ ] 8. Open PR per git workflow; include analysis and test evidence
+- [x] 7. Update docs/configs if behavior or routes changed (no contract changes; docs unchanged)
+- [x] 8. Open PR per git workflow; include analysis and test evidence
 - [ ] 9. Merge and close; optional CHANGELOG update
 
 ## Detailed Steps
@@ -85,6 +85,13 @@
 8. PR and review
    - Open PR with: failure matrix, root causes, applied fixes, tests (RED/GREEN), and risk notes.
    - Address review feedback with additional tests if needed.
+
+### PR status (in progress)
+
+- PR: https://github.com/jairosoft-com/registration-api/pull/3
+- Branch: `fix/e2e-apikey-fallback`
+- Assignee: @raseniero
+- Summary: Fix E2E 401s by enabling test API key in mock mode; all E2E and unit tests pass; build succeeds.
 
 9. Merge
    - Merge per policy (squash/merge). Tag if required.
