@@ -7,8 +7,14 @@ export class ApiError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
   public readonly context?: any;
+  [key: string]: any; // Allow additional properties
 
-  constructor(statusCode: number, message: string, isOperational = true, context?: any) {
+  constructor(
+    statusCode: number,
+    message: string,
+    isOperationalOrContext?: boolean | any,
+    context?: any
+  ) {
     super(message);
 
     // Set the name property
@@ -16,8 +22,20 @@ export class ApiError extends Error {
 
     // Assign properties
     this.statusCode = statusCode;
-    this.isOperational = isOperational;
-    this.context = context;
+
+    // Handle overloaded parameters for backward compatibility
+    if (typeof isOperationalOrContext === 'boolean') {
+      this.isOperational = isOperationalOrContext;
+      this.context = context;
+    } else {
+      // If third parameter is not boolean, treat it as context
+      this.isOperational = true;
+      this.context = isOperationalOrContext;
+      // If context is an object, spread its properties onto this instance
+      if (isOperationalOrContext && typeof isOperationalOrContext === 'object') {
+        Object.assign(this, isOperationalOrContext);
+      }
+    }
 
     // Capture stack trace
     Error.captureStackTrace(this, this.constructor);
