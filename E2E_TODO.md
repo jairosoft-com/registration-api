@@ -29,7 +29,7 @@
 - [x] 6. Cross-check stability: `npm test`, `npm run test:e2e`, and `npm run build`
 - [x] 7. Update docs/configs if behavior or routes changed (no contract changes; docs unchanged)
 - [x] 8. Open PR per git workflow; include analysis and test evidence
-- [ ] 9. Merge and close; optional CHANGELOG update
+- [x] 9. Merge and close; optional CHANGELOG update
 
 ## Detailed Steps
 
@@ -95,6 +95,11 @@
 
 9. Merge
    - Merge per policy (squash/merge). Tag if required.
+
+### Merge (completed)
+
+- PR #3 approved and merged into `main`.
+- Branch `fix/e2e-apikey-fallback` cleaned up locally and on remote.
 
 ## Commands Reference
 
