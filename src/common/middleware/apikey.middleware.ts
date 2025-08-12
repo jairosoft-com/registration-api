@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../utils/ApiError';
 import logger from '../utils/logger';
 
+// API keys are loaded from environment variables for security.
 // In production, these would be stored securely (database, env vars, etc.)
 const VALID_API_KEYS = new Set(
-// API keys are loaded from environment variables for security.
-const VALID_API_KEYS = new Set(
-  [process.env.API_KEY, process.env.CLASS_REGISTRATION_API_KEY, process.env.TEST_API_KEY].filter(Boolean)
+  [process.env.API_KEY, process.env.CLASS_REGISTRATION_API_KEY, process.env.TEST_API_KEY].filter(
+    Boolean
+  )
 );
 
 /**
