@@ -26,7 +26,7 @@ export class MockRegistrationRepository {
   async save(registration: any): Promise<any> {
     // Generate ID if not present
     if (!registration.id) {
-      registration.id = `reg_${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      registration.id = `reg_${Date.now()}${Math.random().toString(36).substring(2, 11)}`;
     }
 
     // Store in memory
