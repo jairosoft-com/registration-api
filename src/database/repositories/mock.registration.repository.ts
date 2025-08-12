@@ -74,7 +74,7 @@ export const MockRegistrationModel = {
   new: function (data: any) {
     const instance = {
       ...data,
-      id: data.id || `reg_${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
+      id: data.id || `reg_${Date.now()}${Math.random().toString(36).slice(2, 11)}`,
       createdAt: data.createdAt || new Date(),
       updatedAt: data.updatedAt || new Date(),
       save: async function () {
