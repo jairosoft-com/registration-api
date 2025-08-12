@@ -4,7 +4,9 @@ import logger from '../utils/logger';
 
 // In production, these would be stored securely (database, env vars, etc.)
 const VALID_API_KEYS = new Set(
-  ['test-api-key-123', process.env.API_KEY, process.env.CLASS_REGISTRATION_API_KEY].filter(Boolean)
+// API keys are loaded from environment variables for security.
+const VALID_API_KEYS = new Set(
+  [process.env.API_KEY, process.env.CLASS_REGISTRATION_API_KEY, process.env.TEST_API_KEY].filter(Boolean)
 );
 
 /**
