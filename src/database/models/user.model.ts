@@ -147,6 +147,9 @@ userSchema.index({ 'twoFactorBackupCodes.used': 1 });
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
+  // If already hashed (bcrypt starts with $2), skip re-hashing to avoid double hashing
+  if (this.password && this.password.startsWith('$2')) return next();
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);

@@ -42,7 +42,9 @@ app.use(cors({ origin: config.corsOrigin }));
 
 // Determine whether to disable rate limits (useful for E2E/mock mode)
 const disableRateLimit =
-  process.env.NODE_ENV === 'test' || process.env.SKIP_DB_CONNECTION === 'true';
+  process.env.NODE_ENV === 'test' ||
+  process.env.SKIP_DB_CONNECTION === 'true' ||
+  process.env.DISABLE_RATE_LIMIT === 'true';
 
 // General rate limiting for all requests
 const generalLimiter = rateLimit({
