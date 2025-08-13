@@ -3,7 +3,7 @@ import { connectMongo, closeMongo } from '../src/database/mongo';
 import { connectRedis, closeRedis } from '../src/database/redis';
 import { UserModel } from '../src/database/models/user.model';
 import bcrypt from 'bcryptjs';
-import logger from '../src/utils/logger';
+import logger from '../src/common/utils/logger';
 import config from '../src/config';
 
 interface SeedUser {

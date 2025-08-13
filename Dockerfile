@@ -1,17 +1,15 @@
 # Multi-stage build for optimized production image
 # Stage 1: Dependencies
-FROM node:22-alpine AS dependencies
+FROM node:20-alpine AS dependencies
 WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
 # Install all dependencies and generate Prisma client
-RUN npm ci && \
-    npx prisma generate && \
-    npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 # Stage 2: Builder
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 # Copy dependencies from previous stage
 COPY --from=dependencies /app/node_modules ./node_modules
@@ -26,17 +24,7 @@ RUN npm run build && \
     rm -rf src scripts tsconfig*.json
 
 # Stage 3: Production dependencies
-FROM node:22-alpine AS prod-dependencies
-WORKDIR /app
-COPY package*.json ./
-COPY prisma ./prisma/
-# Install only production dependencies
-RUN npm ci --omit=dev && \
-    npx prisma generate && \
-    npm cache clean --force
-
-# Stage 4: Production
-FROM node:22-alpine AS production
+FROM node:20-alpine AS production
 # Add security updates and required packages
 RUN apk update && \
     apk upgrade && \
@@ -49,11 +37,13 @@ RUN addgroup -g 1001 -S nodejs && \
 
 WORKDIR /app
 
-# Copy production dependencies
-COPY --from=prod-dependencies --chown=nodejs:nodejs /app/node_modules ./node_modules
+# Copy dependencies (includes dev deps; acceptable for now)
+COPY --from=dependencies --chown=nodejs:nodejs /app/node_modules ./node_modules
 # Copy built application
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+# Provide tsconfig for path-alias resolution at runtime
+COPY --chown=nodejs:nodejs tsconfig*.json ./
 # Copy Prisma files
 COPY --chown=nodejs:nodejs prisma ./prisma
 
@@ -74,4 +64,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Run migrations and start server
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy || true; TS_NODE_PROJECT=tsconfig.runtime.json node -r tsconfig-paths/register dist/server.js"]

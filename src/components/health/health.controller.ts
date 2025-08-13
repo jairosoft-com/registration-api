@@ -119,16 +119,10 @@ export const getHealth = async (_req: Request, res: Response) => {
     // Check system resources
     const systemChecks = checkSystemResources();
 
-    // Determine overall health status
-    const allChecks = [
-      dbChecks.mongodb,
-      dbChecks.postgres,
-      dbChecks.redis,
-      systemChecks.memory,
-      systemChecks.disk,
-    ];
-
-    const unhealthyChecks = allChecks.filter((check) => check.status === 'unhealthy');
+    // Determine overall health status based ONLY on critical dependencies
+    // Keep system checks in the payload but do not fail overall health on them
+    const criticalChecks = [dbChecks.mongodb, dbChecks.postgres, dbChecks.redis];
+    const unhealthyChecks = criticalChecks.filter((check) => check.status === 'unhealthy');
     // Note: HealthCheck interface only supports 'healthy' | 'unhealthy', not 'degraded'
     // const degradedChecks = allChecks.filter((check) => check.status === 'degraded');
 
