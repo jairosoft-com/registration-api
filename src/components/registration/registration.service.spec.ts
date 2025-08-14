@@ -4,10 +4,7 @@ jest.mock('../../database/models/registration.model');
 import { RegistrationService } from './registration.service';
 import { RegistrationModel } from '../../database/models/registration.model';
 import { ApiError } from '../../common/utils/ApiError';
-import {
-  resetMockRegistrations,
-  createMockRegistrationModel,
-} from '../../database/repositories/mock.registration.repository';
+import { resetMockRegistrations } from '../../database/repositories/mock.registration.repository';
 
 describe('RegistrationService', () => {
   let service: RegistrationService;
@@ -63,32 +60,26 @@ describe('RegistrationService', () => {
         schedule: '2024-03-15T10:00:00Z',
       };
 
-      const existingRegistration = {
+      // Mock the findOne to return an existing registration
+      (RegistrationModel.findOne as jest.Mock).mockResolvedValue({
         id: 'reg_existing123',
         email: 'john.doe@example.com',
-      };
-
-      // Seed existing registration in mock repository (SKIP_DB_CONNECTION=true path)
-      const existing = createMockRegistrationModel({
-        id: existingRegistration.id,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: existingRegistration.email,
-        schedule: registrationData.schedule,
-        status: 'confirmed',
-        emailSent: false,
-        adminNotificationSent: false,
       });
-      await existing.save();
 
-      await expect(service.createRegistration(registrationData)).rejects.toThrow(ApiError);
+      // Mock the save method to not be called (since we throw before save)
+      const mockSave = jest.fn();
+      (RegistrationModel.prototype.save as jest.Mock) = mockSave;
 
       try {
         await service.createRegistration(registrationData);
+        // If we reach here, the test should fail
+        expect(true).toBe(false);
       } catch (error) {
         expect(error).toBeInstanceOf(ApiError);
         expect((error as ApiError).statusCode).toBe(409);
         expect((error as ApiError).message).toBe('Registration already exists for this email');
+        // Verify save was not called
+        expect(mockSave).not.toHaveBeenCalled();
       }
     });
 
@@ -137,6 +128,9 @@ describe('RegistrationService', () => {
         schedule: '2024-03-15T10:00:00Z',
       };
 
+      // Mock findOne to return null (no duplicate)
+      (RegistrationModel.findOne as jest.Mock).mockResolvedValue(null);
+
       const result = await service.validateRegistration(registrationData);
 
       expect(result.valid).toBe(true);
@@ -170,17 +164,11 @@ describe('RegistrationService', () => {
         schedule: '2024-03-15T10:00:00Z',
       };
 
-      // Seed existing registration for duplicate email check
-      const dup = createMockRegistrationModel({
-        firstName: 'John',
-        lastName: 'Doe',
+      // Mock findOne to return an existing registration (duplicate)
+      (RegistrationModel.findOne as jest.Mock).mockResolvedValue({
+        id: 'reg_existing123',
         email: 'existing@example.com',
-        schedule: '2024-03-15T10:00:00Z',
-        status: 'confirmed',
-        emailSent: false,
-        adminNotificationSent: false,
       });
-      await dup.save();
 
       const result = await service.validateRegistration(registrationData);
 
@@ -208,9 +196,8 @@ describe('RegistrationService', () => {
         updatedAt: new Date('2024-03-10T10:00:00Z'),
       };
 
-      // Seed registration by ID
-      const seeded = createMockRegistrationModel(mockRegistration);
-      await seeded.save();
+      // Mock findOne to return the registration
+      (RegistrationModel.findOne as jest.Mock).mockResolvedValue(mockRegistration);
 
       const result = await service.getRegistrationById('reg_123456789');
 
@@ -223,10 +210,10 @@ describe('RegistrationService', () => {
     it('should throw error for non-existent registration', async () => {
       (RegistrationModel.findOne as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.getRegistrationById('reg_nonexistent')).rejects.toThrow(ApiError);
-
       try {
         await service.getRegistrationById('reg_nonexistent');
+        // If we reach here, the test should fail
+        expect(true).toBe(false);
       } catch (error) {
         expect(error).toBeInstanceOf(ApiError);
         expect((error as ApiError).statusCode).toBe(404);
