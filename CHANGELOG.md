@@ -357,3 +357,35 @@ We welcome contributions! Please see our contributing guidelines and ensure all 
 ---
 
 _This changelog documents the complete transformation from a basic Express.js template to a production-grade, AI-friendly microservices template achieving 95%+ compliance with modern development standards._
+
+## [2.0.3] - 2025-08-14
+
+### Added
+
+- Utility scripts: `scripts/check-prisma-connection.ts` (Prisma connectivity) and `scripts/check-state.ts` (Mongo/Redis state checks).
+- Documentation: `docs/e2e-faq.md` with examples and common questions.
+
+### Changed
+
+- `package.json` scripts: added `e2e:prisma:check`, `e2e:state`, and `e2e:state:empty`.
+- `playwright.e2e.config.ts`: supports `PLAYWRIGHT_WORKERS` override in CI.
+- CI: added Playwright binaries cache and optional workers env in `.github/workflows/e2e.yml`.
+- README: linked FAQ in E2E section.
+
+## [2.0.2] - 2025-08-14
+
+### Added
+
+- Docker-based E2E testing setup with real Postgres/Mongo/Redis using isolated ports via `docker-compose.e2e.yml` and `.env.e2e`.
+- Playwright E2E configuration `playwright.e2e.config.ts` and CI workflow `.github/workflows/e2e.yml`.
+- Utility scripts: `scripts/cleanup-e2e.ts` (DB reset) and `scripts/wait-for-ready.ts` (readiness ping).
+
+### Changed
+
+- `package.json` scripts: added `e2e:up`, `e2e:wait`, `e2e:seed`, `e2e:browsers`, `e2e:test`, `e2e:down`, `e2e:cleanup`, and consolidated `e2e` (auto wait + Chromium install).
+- `docker-compose.e2e.yml`: healthchecks and `depends_on` to ensure DBs are ready before app starts.
+
+### Documentation
+
+- README: new “E2E Testing (Docker, Real Databases)” section with quick start and details; note about auto-install and readiness wait.
+- Added `docs/e2e-troubleshooting.md` for common issues and commands.

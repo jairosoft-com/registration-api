@@ -1,16 +1,21 @@
+// Mock the model BEFORE importing the service to ensure the service captures the mock
+jest.mock('../../database/models/registration.model');
+
 import { RegistrationService } from './registration.service';
 import { RegistrationModel } from '../../database/models/registration.model';
 import { ApiError } from '../../common/utils/ApiError';
-
-// Mock the model
-jest.mock('../../database/models/registration.model');
+import {
+  resetMockRegistrations,
+  createMockRegistrationModel,
+} from '../../database/repositories/mock.registration.repository';
 
 describe('RegistrationService', () => {
   let service: RegistrationService;
 
   beforeEach(() => {
     service = new RegistrationService();
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    resetMockRegistrations();
   });
 
   describe('createRegistration', () => {
@@ -63,7 +68,18 @@ describe('RegistrationService', () => {
         email: 'john.doe@example.com',
       };
 
-      (RegistrationModel.findOne as jest.Mock).mockResolvedValue(existingRegistration);
+      // Seed existing registration in mock repository (SKIP_DB_CONNECTION=true path)
+      const existing = createMockRegistrationModel({
+        id: existingRegistration.id,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: existingRegistration.email,
+        schedule: registrationData.schedule,
+        status: 'confirmed',
+        emailSent: false,
+        adminNotificationSent: false,
+      });
+      await existing.save();
 
       await expect(service.createRegistration(registrationData)).rejects.toThrow(ApiError);
 
@@ -154,7 +170,17 @@ describe('RegistrationService', () => {
         schedule: '2024-03-15T10:00:00Z',
       };
 
-      (RegistrationModel.findOne as jest.Mock).mockResolvedValue({ email: 'existing@example.com' });
+      // Seed existing registration for duplicate email check
+      const dup = createMockRegistrationModel({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'existing@example.com',
+        schedule: '2024-03-15T10:00:00Z',
+        status: 'confirmed',
+        emailSent: false,
+        adminNotificationSent: false,
+      });
+      await dup.save();
 
       const result = await service.validateRegistration(registrationData);
 
@@ -182,7 +208,9 @@ describe('RegistrationService', () => {
         updatedAt: new Date('2024-03-10T10:00:00Z'),
       };
 
-      (RegistrationModel.findOne as jest.Mock).mockResolvedValue(mockRegistration);
+      // Seed registration by ID
+      const seeded = createMockRegistrationModel(mockRegistration);
+      await seeded.save();
 
       const result = await service.getRegistrationById('reg_123456789');
 

@@ -4,7 +4,7 @@ import { connectRedis, closeRedis } from '../src/database/redis';
 import { UserModel } from '../src/database/models/user.model';
 import bcrypt from 'bcryptjs';
 import logger from '../src/common/utils/logger';
-import config from '../src/config';
+// config is consumed indirectly via the DB connection modules
 
 interface SeedUser {
   email: string;
@@ -54,7 +54,7 @@ const seedPostgres = async () => {
     // For now, we'll just log that PostgreSQL seeding is ready
     logger.info('PostgreSQL seeding completed (no models to seed yet)');
   } catch (error) {
-    logger.error('Error seeding PostgreSQL:', error);
+    logger.error({ error }, 'Error seeding PostgreSQL');
     throw error;
   }
 };
@@ -84,7 +84,7 @@ const seedMongo = async () => {
       logger.info(`Created user: ${user.email} (${user.firstName} ${user.lastName})`);
     });
   } catch (error) {
-    logger.error('Error seeding MongoDB:', error);
+    logger.error({ error }, 'Error seeding MongoDB');
     throw error;
   }
 };
@@ -97,7 +97,7 @@ const seedRedis = async () => {
     // For now, we'll just log that Redis seeding is ready
     logger.info('Redis seeding completed (no data to seed yet)');
   } catch (error) {
-    logger.error('Error seeding Redis:', error);
+    logger.error({ error }, 'Error seeding Redis');
     throw error;
   }
 };
@@ -118,7 +118,7 @@ const seedDatabase = async () => {
 
     logger.info('Database seeding completed successfully!');
   } catch (error) {
-    logger.error('Database seeding failed:', error);
+    logger.error({ error }, 'Database seeding failed');
     process.exit(1);
   } finally {
     // Close database connections

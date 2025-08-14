@@ -307,6 +307,23 @@ docker run -p 4010:4010 --env-file .env express-microservice
 docker-compose run playwright-tests npm run test:e2e
 ```
 
+## 📦 Projects
+
+These are the active implementation tracks and planning docs maintained in this repo:
+
+- Docker E2E Testing Infrastructure
+  - PRD: `prds/docker_e2e_testing/prd.md`
+  - Prompt: `prds/docker_e2e_testing/prompt.md`
+  - TODO/Status: `prds/docker_e2e_testing/TODO.md`
+
+- Initial Docker Setup (compose + runtime)
+  - PRD: `prds/initial_docker_setup/DOCKER_PRD.md`
+
+See also:
+
+- E2E FAQ: `docs/e2e-faq.md`
+- E2E Troubleshooting: `docs/e2e-troubleshooting.md`
+
 ## 🔌 API Endpoints
 
 ### Health Check
@@ -575,6 +592,44 @@ Notes:
 - Rate limiting is disabled automatically in mock mode (`SKIP_DB_CONNECTION=true`).
 - Health endpoints are available at `/`, `/api/v1/health`, `/api/v1/health/ready`, `/api/v1/health/live`.
 - If you see connection errors, make sure the server is listening on `http://localhost:4010` and the port is free.
+
+### E2E Testing (Docker, Real Databases)
+
+Use the Docker-based stack to run Playwright against real PostgreSQL, MongoDB, and Redis with isolated ports.
+
+Prerequisites: Docker + Docker Compose installed.
+
+Quick start:
+
+```bash
+# Bring up the E2E stack (app + DBs)
+npm run e2e:up
+
+# Seed minimal test data
+npm run e2e:seed
+
+# Run Playwright against the running app
+npm run e2e:test
+
+# Tear everything down and remove volumes
+npm run e2e:down
+
+# Or run the full sequence
+npm run e2e
+```
+
+Details:
+
+- Ports (host): Postgres 5433, MongoDB 27018, Redis 6380; app 4010.
+- The override `docker-compose.e2e.yml` uses an isolated network and `.env.e2e` for the app.
+- Tests target `BASE_URL=http://localhost:4010` by default (configurable).
+- Optional cleanup: `npm run e2e:cleanup` resets DBs without recreating containers.
+- Convenience: `npm run e2e` auto-installs Chromium and waits for `/api/v1/health/ready` before seeding/tests.
+
+CI:
+
+- See `.github/workflows/e2e.yml` for a reference GitHub Actions job that starts the stack, seeds, runs tests, and uploads the Playwright report.
+- See also `docs/e2e-faq.md` for examples and common questions.
 
 ### Test Utilities
 

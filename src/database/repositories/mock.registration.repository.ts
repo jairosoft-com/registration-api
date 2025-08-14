@@ -4,6 +4,11 @@ import logger from '../../common/utils/logger';
 const registrations = new Map<string, any>();
 const emailIndex = new Map<string, string>(); // email -> registrationId
 
+export function resetMockRegistrations() {
+  registrations.clear();
+  emailIndex.clear();
+}
+
 export class MockRegistrationRepository {
   async findOne(query: any): Promise<any | null> {
     // Handle findOne by email

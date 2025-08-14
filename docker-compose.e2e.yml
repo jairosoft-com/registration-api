@@ -1,0 +1,58 @@
+version: '3.8'
+
+networks:
+  e2e_net:
+    driver: bridge
+
+services:
+  app:
+    env_file: .env.e2e
+    networks:
+      - e2e_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    ports:
+      - '5433:5432'
+    networks:
+      - e2e_net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d express_template']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  mongo:
+    ports:
+      - '27018:27017'
+    networks:
+      - e2e_net
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  redis:
+    ports:
+      - '6380:6379'
+    networks:
+      - e2e_net
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  playwright-tests:
+    networks:
+      - e2e_net

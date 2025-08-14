@@ -2,42 +2,43 @@
 
 ## Project Structure & Module Organization
 
-- Source: `src/` (entry: `src/server.ts`). Components live under `src/components/*` with auto-discovery of each `index.ts`.
-- Core/Shared: `src/common/*` (base classes, middleware, utils), `src/config/*` (env + Swagger), `src/services/*`.
-- Data: `src/repositories/*` (Prisma/Postgres), `src/database/*` (Mongoose/Mongo), `prisma/*` (schema, migrations).
-- Tests: Jest in `src/**/**/*.spec.ts`; Playwright E2E in `e2e/*`.
-- Docs: Swagger at `/api-docs`.
+- Source lives in `src/` (entry: `src/server.ts`).
+- Route components auto-discover from `src/components/*/index.ts` and mount at `/api/v{version}/{name}` via `BaseComponent`.
+- Shared code: `src/common/*` (base classes, middleware, utils), `src/config/*` (env + Swagger), `src/services/*`.
+- Data layers: `src/repositories/*` (Prisma/Postgres), `src/database/*` (Mongoose/Mongo), `prisma/*` (schema, migrations).
+- Tests: Jest alongside sources as `*.spec.ts`; Playwright E2E in `e2e/*`.
+- Docs: Swagger served at `/api-docs`.
 
 ## Build, Test, and Development Commands
 
-- `npm run dev`: Start local server with hot reload (default port `4010`).
-- `npm run build`: TypeScript build to `dist/`.
-- `npm start`: Run compiled server.
-- `npm test`: Jest unit/integration tests (use `SKIP_DB_CONNECTION=true` for DB-free runs).
-- `npm run test:e2e`: Playwright E2E tests.
+- `npm run dev`: Start local server with hot reload (port `4010`).
+- `npm run build`: Compile TypeScript to `dist/`.
+- `npm start`: Run compiled server from `dist/`.
+- `npm test`: Run Jest unit/integration tests. Use `SKIP_DB_CONNECTION=true` for DB-free runs.
+- `npm run test:e2e`: Run Playwright E2E tests.
 - `npm run lint` / `npm run type-check`: Lint and strict TS checks.
 
 ## Coding Style & Naming Conventions
 
 - Language: TypeScript 5 (strict). Prefer async/await and typed interfaces.
-- Indentation: 2 spaces; keep functions small and focused.
-- Naming: files `kebab-case.ts`; classes `PascalCase`; functions/vars `camelCase`; tests `*.spec.ts` near code.
-- Linting: ESLint via `npm run lint`; fix obvious issues before PRs.
+- Indentation: 2 spaces. Keep functions small and focused.
+- Naming: files `kebab-case.ts`; classes `PascalCase`; functions/vars `camelCase`; tests `*.spec.ts`.
+- Linting/formatting: ESLint via `npm run lint`. Fix obvious issues before PRs.
 
 ## Testing Guidelines
 
 - Frameworks: Jest + Supertest (API), Playwright (E2E).
-- Placement: Unit/integration tests beside sources; E2E under `e2e/`.
-- Env: For isolated tests, export `SKIP_DB_CONNECTION=true` to enable mock repositories.
-- Aim for meaningful coverage on new/changed code; test happy paths, validation, and error cases.
+- Placement: unit/integration tests live next to code; E2E under `e2e/`.
+- Env isolation: export `SKIP_DB_CONNECTION=true` to enable mock repositories.
+- Aim for meaningful coverage: include happy paths, validation, and error cases.
 
 ## Commit & Pull Request Guidelines
 
-- Commits: Clear, present-tense messages (optionally scope, e.g., `users:`). Group related changes.
-- PRs: Describe intent, key changes, and testing done; link issues. Include screenshots/logs for behavior changes. Keep diffs focused.
+- Commits: clear, present-tense messages (optionally scoped, e.g., `users:`). Group related changes.
+- PRs: describe intent, key changes, and testing done; link issues. Include screenshots/logs for behavior changes. Keep diffs focused.
 
 ## Security & Configuration Tips
 
-- Configuration is validated in `src/config/index.ts`. Prefer these envs: `JWT_SECRET` (≥32 chars), Postgres/Mongo/Redis vars, `CORS_ORIGIN`.
-- Feature flags: `USE_PRISMA` selects Postgres path; `SKIP_DB_CONNECTION` for mock mode.
-- Components default to `/api/v{version}/{name}`; extend `BaseComponent` and let auto-discovery mount routes.
+- Configuration validated in `src/config/index.ts`. Set `JWT_SECRET` (≥32 chars), DB/Redis vars, and `CORS_ORIGIN`.
+- Feature flags: `USE_PRISMA` selects Postgres; `SKIP_DB_CONNECTION` enables mock mode.
+- Components extend `BaseComponent` for conventional routing; prefer this over manual mounts.
