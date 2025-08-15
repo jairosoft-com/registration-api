@@ -7,6 +7,11 @@ vars:
   DOCKER_TAG: latest
 
 tasks:
+  default:
+    desc: Show all available tasks (default)
+    cmds:
+      - task --list
+
   dev:
     desc: Start development environment
     cmds:
